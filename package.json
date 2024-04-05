@@ -1,6 +1,6 @@
 {
-  "name": "electron-vue-app",
-  "version": "1.0.0",
+  "name": "electron-tool-kits",
+  "version": "0.0.2",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -20,8 +20,10 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "csv-parser": "^3.0.0",
     "electron-updater": "^6.1.7",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.1",

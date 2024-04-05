@@ -28,7 +28,7 @@ const openOutputFolder = () => {
 
 <template>
   <header>
-    <div class="title">安卓端B站视频快速提取</div>
+    <div class="main-title">安卓端B站视频快速提取</div>
   </header>
   <div class="contain">
     <div class="btn-box">
@@ -40,20 +40,13 @@ const openOutputFolder = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 /* header {
   height: 40px;
 } */
 
 button {
   margin: 0 auto;
-}
-
-.title {
-  font-size: 1.5em;
-  font-weight: bold;
-  text-align: center;
-  line-height: 50px;
 }
 
 .contain {

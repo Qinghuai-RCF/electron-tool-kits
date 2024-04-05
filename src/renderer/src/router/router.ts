@@ -2,7 +2,7 @@ import * as VueRouter from 'vue-router'
 
 import Home from '../components/Home.vue'
 import Fn_1 from '../components/Fn_1.vue'
-import Fn_2 from '../components/Fn_2.vue'
+import Fn_2 from '../components/fn_2_folder_remarks/Fn_2.vue'
 
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),

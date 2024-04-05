@@ -4,7 +4,7 @@
 
 <template>
   <header>
-    <div class="title">自制工具集</div>
+    <div class="main-title">自制工具集</div>
   </header>
   <div class="box">
     <div class="outer-frame">
@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 /* header {
   height: 40px;
 } */
@@ -36,19 +36,13 @@
   display: grid;
   justify-content: center;
   align-items: center;
+  user-select: none;
 }
 
 .outer-frame {
   width: 510px;
   height: auto;
   padding-bottom: 50px;
-}
-
-.title {
-  text-align: center;
-  font-size: 2em;
-  font-weight: bold;
-  margin-bottom: 40px;
 }
 
 .fn-box {

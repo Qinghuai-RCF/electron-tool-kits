@@ -20,8 +20,18 @@ if (process.contextIsolated) {
 }
 
 // 发送信号
-const sendSignal = (signal, content = null) => {
-  ipcRenderer.send(signal, content)
+const sendSignal = (signal, content1 = null, content2 = null) => {
+  ipcRenderer.send(signal, content1, content2)
+  console.log('成功发送', signal, content1, content2)
+}
+
+// 接收信号
+const onSignal = (signal, callback) => {
+  ipcRenderer.on(signal, callback)
+}
+
+const offSignal = (signal, callback) => {
+  ipcRenderer.off(signal, callback)
 }
 
 // 监听
@@ -48,6 +58,7 @@ const fn1Listener = () => {
 // 暴露函数
 contextBridge.exposeInMainWorld('electronAPI', {
   sendSignal,
-
+  onSignal,
+  offSignal,
   fn1Listener
 })

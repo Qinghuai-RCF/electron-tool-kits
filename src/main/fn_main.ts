@@ -1,26 +1,39 @@
 import { nativeTheme, ipcMain, shell } from 'electron'
 import { exec } from 'child_process'
+import fs from 'fs'
+import { join } from 'path'
+import store from '../renderer/src/store'
 
-export const initFnMain = () => {
-  initChangeTheme()
+export const initFnMain = (mainWindow) => {
+  initChangeTheme(mainWindow)
   initCmdExec()
   initOpenFolder()
 }
 
-const initChangeTheme = () => {
+const initChangeTheme = (mainWindow) => {
   ipcMain.on('system-theme', () => {
     nativeTheme.themeSource = 'system'
+    saveTheme('system')
+    updateThemeData(mainWindow)
   })
   ipcMain.on('light-theme', () => {
     nativeTheme.themeSource = 'light'
+    saveTheme('light')
+    updateThemeData(mainWindow)
   })
   ipcMain.on('dark-theme', () => {
     nativeTheme.themeSource = 'dark'
+    saveTheme('dark')
+    updateThemeData(mainWindow)
+  })
+
+  // 主动获取主题数据
+  ipcMain.on('get-theme-data', () => {
+    updateThemeData(mainWindow)
   })
 }
 
 const initCmdExec = () => {
-  console.log('asd')
   ipcMain.on('request-cmd', (event, command) => {
     // 验证命令是否安全
     if (isCommandSafe(command)) {
@@ -61,4 +74,35 @@ const isCommandSafe = (command) => {
   // ...
   // 如果所有检查都通过，则命令被认为是安全的
   return true
+}
+
+const saveTheme = (theme) => {
+  store.AppData.theme = theme
+  // 读取 JSON 文件 获取主题色
+  fs.readFile(join(__dirname, '../renderer/assets/config.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err)
+      return
+    }
+
+    // 解析 JSON 数据
+    const config = JSON.parse(data)
+    console.log('保存', theme)
+    config.AppData.theme = theme
+    // 将 JavaScript 对象转换回 JSON 字符串
+    const modifiedJsonData = JSON.stringify(config, null, '\t') // 使用 null 和 2 来美化 JSON 输出
+
+    // 将修改后的 JSON 数据写入原始 JSON 文件的路径中
+    fs.writeFileSync(join(__dirname, '../renderer/assets/config.json'), modifiedJsonData, 'utf8')
+
+    console.log(
+      'Modified JSON data has been saved to:',
+      join(__dirname, '../renderer/assets/config.json')
+    )
+  })
+}
+
+const updateThemeData = (mainWindow) => {
+  const themeDataString = JSON.stringify(store.AppData.theme)
+  mainWindow.webContents.send('update-theme-data', themeDataString)
 }

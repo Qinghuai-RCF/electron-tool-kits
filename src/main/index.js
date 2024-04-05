@@ -1,7 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import fs from 'fs'
+import store from '../renderer/src/store'
 
 import { initFn } from './fn'
 
@@ -40,6 +42,25 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  // 读取 JSON 文件 获取主题色
+  fs.readFile(join(__dirname, '../renderer/assets/config.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err)
+      return
+    }
+
+    // 解析 JSON 数据
+    const config = JSON.parse(data)
+
+    // 获取 theme 值
+    const theme = config.AppData.theme
+    console.log('Theme:', theme)
+
+    nativeTheme.themeSource = theme
+
+    store.AppData.theme = theme
+  })
 }
 
 // This method will be called when Electron has finished

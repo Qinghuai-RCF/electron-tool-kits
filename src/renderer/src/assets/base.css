@@ -33,6 +33,7 @@
   --dark-2: #1e2022;
   --dark-3: #2b2e31;
   --white: #ffffff;
+  --light-text-1: #bfbfbf;
 }
 
 
@@ -45,7 +46,9 @@
   --color-background-1: var(--light-1);
   --color-background-2: var(--light-2);
   --color-background-3: var(--light-3);
-  --color-text: var(--black);
+  --color-text-1: var(--black);
+  --color-boder: var(--black);
+  --color-selected: #0078d4;
 }
 
 /* 如果用户的主题设置为暗色 */
@@ -54,7 +57,10 @@
     --color-background-1: var(--dark-1);
     --color-background-2: var(--dark-2);
     --color-background-3: var(--dark-3);
-    --color-text: var(--white);
+    --color-text-1: var(--light-text-1);
+    --color-text-2: var(--white);
+    --color-boder: var(--white);
+    --color-selected: #0078d4;
   }
 }
 
@@ -79,7 +85,8 @@ button {
   background: none;
   padding: 0;
   margin: 0;
-  color: var(--color-text);
+  color: var(--color-text-1);
+  vertical-align:middle;
   /* 其他必要的样式 */
 }
 
@@ -89,7 +96,7 @@ button:focus {
 
 body {
   min-height: 100vh;
-  color: var(--color-text);
+  color: var(--color-text-1);
   background: var(--color-background-1);
   line-height: 1.6;
   font-family:
@@ -111,9 +118,27 @@ body {
 }
 
 a {
-  color: var(--color-text);
+  color: var(--color-text-1);
   text-decoration: none;
   cursor: default;
 }
+
+input {
+  margin: 0;
+  /* padding: 8px 12px; */
+  border: 1px solid #ccc;
+  outline: 0;
+  background: none;
+  font: inherit;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  vertical-align:middle;
+}
+
 
 

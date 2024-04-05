@@ -1,5 +1,16 @@
-<script setup lang="ts">
-import Siderbar from './components/Siderbar.vue'
+<script setup>
+import Siderbar from './components/Siderbar/Siderbar.vue'
+import { onMounted } from 'vue'
+import store from './store'
+
+onMounted(() => {
+  window.electronAPI.sendSignal('get-theme-data')
+
+  window.electronAPI.onSignal('update-theme-data', (event, themeDataString) => {
+    const themeData = JSON.parse(themeDataString)
+    store.AppData.theme = themeData
+  })
+})
 </script>
 
 <template>
@@ -24,22 +35,6 @@ import Siderbar from './components/Siderbar.vue'
 <style>
 @import './assets/base.css';
 
-/* code {
-  font-weight: 600;
-  padding: 3px 5px;
-  border-radius: 2px;
-  background-color: var(--color-background-mute);
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    SF Mono,
-    Menlo,
-    Consolas,
-    Liberation Mono,
-    monospace;
-  font-size: 85%;
-} */
-
 .app-window {
   display: grid;
   grid-template-areas: 'aside main';
@@ -49,24 +44,19 @@ import Siderbar from './components/Siderbar.vue'
 }
 
 button {
-  /* transition: background-color 0.2s; */
   transition: background-color 0.1s;
 }
 
 header {
   position: relative;
   grid-area: header;
-  /* background-color: var(--color-background); */
-  /* text-align: center; */
-  padding-left: 10px;
+  /* padding-left: 10px; */
   font-weight: bold;
   line-height: 49px;
   height: 49px;
   font-size: 20px;
   user-select: none;
   background-color: var(--color-background-2);
-  /* padding-bottom: 1px; */
-  /* border-bottom: 1px solid red; */
 }
 
 aside {
@@ -82,7 +72,6 @@ main {
   position: absolute;
   right: 0px;
   top: 0px;
-  /* float: right; */
   display: flex;
 }
 
@@ -91,7 +80,7 @@ main {
   width: 45px;
   text-align: center;
   line-height: 29px;
-  color: var(--color-text);
+  color: var(--color-text-1);
 }
 
 .hover-gray:hover {
@@ -100,5 +89,13 @@ main {
 
 .hover-red:hover {
   background-color: #e81123;
+}
+
+.main-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+  line-height: 50px;
+  color: var(--color-text-1);
 }
 </style>
