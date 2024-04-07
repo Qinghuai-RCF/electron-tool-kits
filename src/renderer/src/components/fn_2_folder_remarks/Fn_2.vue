@@ -160,9 +160,7 @@ button:hover {
 }
 
 .fn2-btn1:active,
-.fn2-btn1:focus,
-.fn2-runFolderRemarks-btn:active,
-.fn2-runFolderRemarks-btn:focus {
+.fn2-runFolderRemarks-btn:active {
   border: var(--color-selected) solid 1px;
 }
 

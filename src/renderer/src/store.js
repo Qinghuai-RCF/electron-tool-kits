@@ -3,7 +3,8 @@ import { reactive } from 'vue'
 const store = reactive({
   AppData: {
     theme: '',
-    publicPath: './src/renderer/public'
+    appDocPath: '',
+    appConfigsPath: ''
   },
   fn1Data: {},
   fn2Data: {

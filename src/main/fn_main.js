@@ -1,10 +1,8 @@
 import { nativeTheme, ipcMain, shell } from 'electron'
 import { exec } from 'child_process'
 import fs from 'fs'
-import { join } from 'path'
 import store from '../renderer/src/store'
-
-const appConfigPath = join(store.AppData.publicPath, '/config/app_config.json')
+import dirMg from './dirMg'
 
 export const initFnMain = (mainWindow) => {
   initChangeTheme(mainWindow)
@@ -31,6 +29,7 @@ const initChangeTheme = (mainWindow) => {
 
   // 主动获取主题数据
   ipcMain.on('get-theme-data', () => {
+    initTheme()
     updateThemeData(mainWindow)
   })
 }
@@ -78,27 +77,65 @@ const isCommandSafe = (command) => {
   return true
 }
 
-const saveTheme = (theme) => {
-  store.AppData.theme = theme
-  // 读取 JSON 文件 获取主题色
-  fs.readFile(appConfigPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file:', err)
-      return
-    }
+const initTheme = () => {
+  console.log('初始化主题')
+  try {
+    console.log('尝试读取主题')
+    // 读取文件
+    const data = fs.readFileSync(dirMg.mainCfgPath, 'utf8')
 
     // 解析 JSON 数据
     const config = JSON.parse(data)
+    // 获取 theme 值
+    const theme = config.theme
+    console.log('Theme:', theme)
+
+    nativeTheme.themeSource = theme
+
+    store.AppData.theme = theme
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.log('主题文件不存在，新建')
+      // 文件不存在，尝试创建文件
+      nativeTheme.themeSource = 'system'
+
+      store.AppData.theme = 'system'
+
+      saveTheme(store.AppData.theme)
+    } else {
+      console.error('读取或解析 JSON 数据时出错:', err)
+    }
+  }
+}
+
+const saveTheme = async (theme) => {
+  store.AppData.theme = theme
+  await dirMg.makeDir(dirMg.appConfigsPath)
+
+  let config
+  try {
+    // 读取文件
+    const data = fs.readFileSync(dirMg.mainCfgPath, 'utf8')
+    // 解析 JSON 数据
+    config = JSON.parse(data)
     console.log('保存', theme)
     config.theme = theme
     // 将 JavaScript 对象转换回 JSON 字符串
     const modifiedJsonData = JSON.stringify(config, null, '\t') // 使用 null 和 2 来美化 JSON 输出
 
     // 将修改后的 JSON 数据写入原始 JSON 文件的路径中
-    fs.writeFileSync(appConfigPath, modifiedJsonData, 'utf8')
+    fs.writeFileSync(dirMg.mainCfgPath, modifiedJsonData, 'utf8')
 
-    console.log('Modified JSON data has been saved to:', appConfigPath)
-  })
+    console.log('Modified JSON data has been saved to:', dirMg.mainCfgPath)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // 文件不存在，尝试创建文件
+      fs.writeFileSync(dirMg.mainCfgPath, JSON.stringify({ theme: theme }, null, '\t'), 'utf8')
+      console.log('文件已创建并保存主题数据。')
+    } else {
+      console.error('读取或解析 JSON 数据时出错:', err)
+    }
+  }
 }
 
 const updateThemeData = (mainWindow) => {

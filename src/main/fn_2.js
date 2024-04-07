@@ -1,39 +1,53 @@
 import fs from 'fs'
-import { ipcMain, dialog } from 'electron'
+import { ipcMain, dialog, app } from 'electron'
 import { join } from 'path'
 import store from '../renderer/src/store'
 
-const fn2ConfigPath = join(store.AppData.publicPath, '/config/fn2_folder_remarks_config.json')
-const fn2DataPath = join(store.AppData.publicPath, '/config/fn2_folder_remarks_data.json')
-
+let fn2ConfigsPath
+let fn2CfgPath
+let fn2DataPath
 let win
 
-export const initFn2 = (mainWindow) => {
+export const initFn2 = async (mainWindow) => {
+  console.log('开始初始化fn2')
   win = mainWindow
+  fn2ConfigsPath = join(store.AppData.appConfigsPath, 'fn2_folder_remarks')
+  fn2CfgPath = join(fn2ConfigsPath, 'config.json')
+  fn2DataPath = join(fn2ConfigsPath, 'data.json')
+
+  await mkCfgDir()
+  console.log('结束创建文件夹')
 
   ipcMain.on('init-fn2-setting', () => {
-    // 读取 JSON 文件
-    fs.readFile(fn2ConfigPath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading file:', err)
-        return
-      }
-      console.log('setting数据', data)
-
+    try {
+      // 读取文件
+      const data = fs.readFileSync(fn2CfgPath, 'utf8')
+      console.log('正在读取：', fn2CfgPath)
       // 解析 JSON 数据
       const config = JSON.parse(data)
-
-      store.fn2Data.dataPath = config.dataPath
+      console.log('读取到的 JSON 数据:', config)
       store.fn2Data.folderPath = config.folderPath
       store.fn2Data.nowFolderPath = store.fn2Data.folderPath
 
       const sendData = {
-        folderPath: config.folderPath,
-        dataPath: config.dataPath
+        folderPath: config.folderPath
       }
       mainWindow.webContents.send('update-fn2-setting-data', JSON.stringify(sendData))
       initTable()
-    })
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        store.fn2Data.folderPath = app.getPath('documents')
+        store.fn2Data.nowFolderPath = store.fn2Data.folderPath
+        const sendData = {
+          folderPath: store.fn2Data.folderPath
+        }
+        mainWindow.webContents.send('update-fn2-setting-data', JSON.stringify(sendData))
+        console.log('没有设置')
+        initTable()
+      } else {
+        console.error('读取或解析 JSON 数据时出错:', err)
+      }
+    }
   })
 
   ipcMain.on('fn2-save-new-data', (event, tData) => {
@@ -90,8 +104,31 @@ export const initFn2 = (mainWindow) => {
   })
 }
 
-const initTable = () => {
-  getData()
+const mkCfgDir = () => {
+  return new Promise((resolve, reject) => {
+    fs.stat(fn2ConfigsPath, (err) => {
+      if (err) {
+        // 如果文件夹不存在，则创建它
+        fs.mkdir(fn2ConfigsPath, (err) => {
+          if (err) {
+            console.error('Failed to create folder:', err)
+            reject()
+          }
+          console.log('Folder has been created successfully.', fn2ConfigsPath)
+        })
+      } else {
+        // 如果文件夹存在，则不需要创建
+        console.log('文件夹已存在：', fn2ConfigsPath)
+
+      }
+    })
+    resolve()
+  })
+}
+
+const initTable = async () => {
+  await mkCfgDir()
+  await getData()
   buildTable()
 }
 
@@ -169,26 +206,30 @@ const updateDataFile = () => {
   // 写入文件
   try {
     fs.writeFileSync(fn2DataPath, data, 'utf8')
-    console.log('数据已保存到文件')
+    console.log('数据已保存到文件', fn2DataPath)
   } catch (err) {
     console.error('写入文件时出错:', err)
   }
 }
 
-const getData = () => {
-  let jsonData
-  try {
-    // 读取文件
-    const data = fs.readFileSync(fn2DataPath, 'utf8')
-    // 解析 JSON 数据
-    jsonData = JSON.parse(data)
-    console.log('读取到的 JSON 数据:', jsonData)
-  } catch (err) {
-    console.error('读取或解析 JSON 数据时出错:', err)
-  }
+const getData = async () => {
+  return new Promise((resolve, reject) => {
+    let jsonData
+    try {
+      // 读取文件
+      const data = fs.readFileSync(fn2DataPath, 'utf8')
+      // 解析 JSON 数据
+      jsonData = JSON.parse(data)
+      console.log('读取到的 JSON 数据:', jsonData)
+    } catch (err) {
+      console.error('读取或解析 JSON 数据时出错:', err)
+      reject()
+    }
 
-  Object.entries(jsonData).forEach(([key, value]) => {
-    store.fn2Data.remarksData[key] = value
+    Object.entries(jsonData).forEach(([key, value]) => {
+      store.fn2Data.remarksData[key] = value
+    })
+    resolve()
   })
 }
 
@@ -202,8 +243,8 @@ const saveFolderPath = () => {
 
   // 写入文件
   try {
-    fs.writeFileSync(fn2ConfigPath, data, 'utf8')
-    console.log('数据已保存到文件')
+    fs.writeFileSync(fn2CfgPath, data, 'utf8')
+    console.log('数据已保存到文件', fn2CfgPath)
   } catch (err) {
     console.error('写入文件时出错:', err)
   }

@@ -1,5 +1,5 @@
-import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow } from 'electron'
+import { join, resolve } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import fs from 'fs'
@@ -7,23 +7,26 @@ import store from '../renderer/src/store'
 
 import { initFn } from './fn'
 
-const appConfigPath = join(store.AppData.publicPath, '/config/app_config.json')
+const WINDOW_WIDTH = 1200
+const WINDOW_HEIGHT = 670
+const WINDOW_MIN_WIDTH = 650
+const WINDOW_MIN_HEIGHT = 500
 
 let mainWindow
 
 function createWindow() {
+  console.log('开始初始化窗口')
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    // width: 900,
-    width: 1200,
-    height: 670,
-    minWidth: 650, // 设置最小宽度为 400
-    minHeight: 500, // 设置最小高度为 300
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
+    minWidth: WINDOW_MIN_WIDTH,
+    minHeight: WINDOW_MIN_HEIGHT,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: resolve(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
@@ -47,31 +50,37 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+}
 
-  // 读取 JSON 文件 获取主题色
-  fs.readFile(appConfigPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file:', err)
-      return
-    }
+const readyToMkDir = () => {
+  return new Promise((resolve) => {
+    console.log('readyToMkDir')
+    store.AppData.appDocPath = join(app.getPath('documents'), 'electron-tool-kits')
+    store.AppData.appConfigsPath = join(store.AppData.appDocPath, 'config')
+    resolve()
+  })
+}
 
-    // 解析 JSON 数据
-    const config = JSON.parse(data)
-
-    // 获取 theme 值
-    const theme = config.theme
-    console.log('Theme:', theme)
-
-    nativeTheme.themeSource = theme
-
-    store.AppData.theme = theme
+const mkDir = (path) => {
+  return new Promise((resolve, reject) => {
+    console.log(`mkDir: ${path}`)
+    fs.mkdir(path, { recursive: true }, (err) => {
+      if (err) {
+        console.error('Failed to create folder:', err)
+        reject()
+      } else {
+        console.log('Folder has been created successfully.')
+        resolve()
+      }
+    })
   })
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  console.log('app准备就绪')
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -82,19 +91,19 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
-  createWindow()
+  await Promise.all([
+    createWindow(),
+    readyToMkDir(),
+    mkDir(store.AppData.appDocPath),
+    mkDir(store.AppData.appConfigsPath)
+  ])
+  initFn(mainWindow)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-
-  // 初始化功能
-  initFn(mainWindow)
 })
 
 app.on('window-all-closed', () => {
