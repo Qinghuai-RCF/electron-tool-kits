@@ -2,15 +2,18 @@ import { reactive } from 'vue'
 
 const store = reactive({
   AppData: {
-    theme: ''
+    theme: '',
+    publicPath: './src/renderer/public'
   },
   fn1Data: {},
   fn2Data: {
+    dataPath: '',
+    folderPath: '',
+    nowFolderPath: '',
     tableData: {},
-    csvPath: '',
     isRemarksChanged: false,
-    csvData: {},
-    folderPath: ''
+    remarksData: {},
+    newData: {}
   }
 })
 

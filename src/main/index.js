@@ -7,6 +7,8 @@ import store from '../renderer/src/store'
 
 import { initFn } from './fn'
 
+const appConfigPath = join(store.AppData.publicPath, '/config/app_config.json')
+
 let mainWindow
 
 function createWindow() {
@@ -15,6 +17,8 @@ function createWindow() {
     // width: 900,
     width: 1200,
     height: 670,
+    minWidth: 650, // 设置最小宽度为 400
+    minHeight: 500, // 设置最小高度为 300
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -33,6 +37,7 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+  // 调试工具
   mainWindow.webContents.openDevTools()
 
   // HMR for renderer base on electron-vite cli.
@@ -44,7 +49,7 @@ function createWindow() {
   }
 
   // 读取 JSON 文件 获取主题色
-  fs.readFile(join(__dirname, '../renderer/assets/config.json'), 'utf8', (err, data) => {
+  fs.readFile(appConfigPath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading file:', err)
       return
@@ -54,7 +59,7 @@ function createWindow() {
     const config = JSON.parse(data)
 
     // 获取 theme 值
-    const theme = config.AppData.theme
+    const theme = config.theme
     console.log('Theme:', theme)
 
     nativeTheme.themeSource = theme

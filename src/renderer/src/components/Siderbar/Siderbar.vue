@@ -6,7 +6,9 @@ import themePopup from './ThemePopup.vue'
   <div class="aside-wrap">
     <div class="aside-top">
       <router-link to="/" draggable="false">
-        <button class="aside-btn">主页</button>
+        <button class="aside-btn">
+          <img src="../../../public/icon/首页.svg" />
+        </button>
       </router-link>
     </div>
     <div class="aside-bottom">
@@ -36,7 +38,9 @@ import themePopup from './ThemePopup.vue'
   line-height: 49px;
   color: var(--color-text-1);
   height: 50px;
-  display: block;
+  display: grid;
+  justify-items: center;
+  align-items: center;
 }
 
 .aside-btn:hover {
@@ -45,5 +49,9 @@ import themePopup from './ThemePopup.vue'
 
 .aside-btn-selected {
   background-color: var(--color-background-3);
+}
+
+.aside-btn img {
+  width: 40px;
 }
 </style>

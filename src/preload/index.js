@@ -30,8 +30,8 @@ const onSignal = (signal, callback) => {
   ipcRenderer.on(signal, callback)
 }
 
-const offSignal = (signal, callback) => {
-  ipcRenderer.off(signal, callback)
+const onceSignal = (signal, callback) => {
+  ipcRenderer.once(signal, callback)
 }
 
 // 监听
@@ -59,6 +59,6 @@ const fn1Listener = () => {
 contextBridge.exposeInMainWorld('electronAPI', {
   sendSignal,
   onSignal,
-  offSignal,
+  onceSignal,
   fn1Listener
 })

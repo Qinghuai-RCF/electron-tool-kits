@@ -4,6 +4,8 @@ import fs from 'fs'
 import { join } from 'path'
 import store from '../renderer/src/store'
 
+const appConfigPath = join(store.AppData.publicPath, '/config/app_config.json')
+
 export const initFnMain = (mainWindow) => {
   initChangeTheme(mainWindow)
   initCmdExec()
@@ -79,7 +81,7 @@ const isCommandSafe = (command) => {
 const saveTheme = (theme) => {
   store.AppData.theme = theme
   // 读取 JSON 文件 获取主题色
-  fs.readFile(join(__dirname, '../renderer/assets/config.json'), 'utf8', (err, data) => {
+  fs.readFile(appConfigPath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading file:', err)
       return
@@ -88,17 +90,14 @@ const saveTheme = (theme) => {
     // 解析 JSON 数据
     const config = JSON.parse(data)
     console.log('保存', theme)
-    config.AppData.theme = theme
+    config.theme = theme
     // 将 JavaScript 对象转换回 JSON 字符串
     const modifiedJsonData = JSON.stringify(config, null, '\t') // 使用 null 和 2 来美化 JSON 输出
 
     // 将修改后的 JSON 数据写入原始 JSON 文件的路径中
-    fs.writeFileSync(join(__dirname, '../renderer/assets/config.json'), modifiedJsonData, 'utf8')
+    fs.writeFileSync(appConfigPath, modifiedJsonData, 'utf8')
 
-    console.log(
-      'Modified JSON data has been saved to:',
-      join(__dirname, '../renderer/assets/config.json')
-    )
+    console.log('Modified JSON data has been saved to:', appConfigPath)
   })
 }
 

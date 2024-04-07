@@ -11,13 +11,13 @@
       <div class="fn-box">
         <router-link to="/fn-1">
           <button class="btn fn-btn">
-            <img class="fn-btn-img" src="../../public/ico1.png" />
+            <img class="fn-btn-img" src="../../public/icon/转换文件.svg" />
             <div class="fn-btn-text">安卓端B站视频快速提取</div>
           </button>
         </router-link>
         <router-link to="/fn-2">
           <button class="btn fn-btn">
-            <img class="fn-btn-img" src="../../public/ico1.png" />
+            <img class="fn-btn-img" src="../../public/icon/标签.svg" />
             <div class="fn-btn-text">文件夹备注</div>
           </button>
         </router-link>

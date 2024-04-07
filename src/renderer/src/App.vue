@@ -66,6 +66,7 @@ aside {
 
 main {
   grid-area: main;
+  height: 100vh;
 }
 
 .header-right {
