@@ -1,5 +1,12 @@
 <script setup>
-import Siderbar from './components/Siderbar/Siderbar.vue'
+import themePopup from './components/ThemePopup.vue'
+import {
+  HomeFilled,
+  TurnOff,
+  EditPen,
+  VideoCamera
+} from '@element-plus/icons-vue'
+
 import { onMounted } from 'vue'
 import store from './store'
 
@@ -14,89 +21,55 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-window">
-    <!-- <header>
-      <div class="header-title">主页</div>
-      <div class="header-right">
-        <button class="btn win-btn hover-gray">_</button>
-        <button class="btn win-btn hover-gray">口</button>
-        <button class="btn win-btn hover-red">X</button>
-      </div>
-    </header> -->
-    <aside>
-      <Siderbar></Siderbar>
-    </aside>
-    <main>
-      <router-view></router-view>
-    </main>
-  </div>
+  <el-container>
+    <el-aside id="menu-container" width="180px">
+      <el-menu default-active="/" router>
+        <el-menu-item index="/">
+          <el-icon>
+            <HomeFilled />
+          </el-icon>
+          <span>主页</span>
+        </el-menu-item>
+        <el-menu-item index="/fn-1">
+          <el-icon>
+            <VideoCamera />
+          </el-icon>
+          <span>B站视频提取</span>
+        </el-menu-item>
+        <el-menu-item index="/folder-remarks">
+          <el-icon>
+            <EditPen />
+          </el-icon>
+          <span>文件夹备注</span>
+        </el-menu-item>
+      </el-menu>
+      <el-button id="theme-btn">
+        <el-icon>
+          <TurnOff />
+        </el-icon>
+        主题
+      </el-button>
+      <themePopup id="theme-popup"></themePopup>
+    </el-aside>
+    <router-view></router-view>
+
+  </el-container>
+
+
 </template>
 
 <style>
 @import './assets/base.css';
 
-.app-window {
-  display: grid;
-  grid-template-areas: 'aside main';
-  grid-template-columns: 50px 1fr;
-  /* grid-template-rows: 30px 1fr; */
+.el-container {
   height: 100vh;
 }
 
-button {
-  transition: background-color 0.1s;
+.el-menu {
+  border-right: none;
 }
 
-header {
-  position: relative;
-  grid-area: header;
-  /* padding-left: 10px; */
-  font-weight: bold;
-  line-height: 49px;
-  height: 49px;
-  font-size: 20px;
-  user-select: none;
-  background-color: var(--color-background-2);
-}
-
-aside {
-  grid-area: aside;
-  background-color: var(--color-background-2);
-}
-
-main {
-  grid-area: main;
-  height: 100vh;
-}
-
-.header-right {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  display: flex;
-}
-
-.win-btn {
-  user-select: none;
-  width: 45px;
-  text-align: center;
-  line-height: 29px;
-  color: var(--color-text-1);
-}
-
-.hover-gray:hover {
-  background-color: var(--color-background-2);
-}
-
-.hover-red:hover {
-  background-color: #e81123;
-}
-
-.main-title {
-  font-size: 1.5em;
-  font-weight: bold;
-  text-align: center;
-  line-height: 50px;
-  color: var(--color-text-1);
+.el-aside {
+  border-right: 1px solid var(--el-menu-border-color);
 }
 </style>

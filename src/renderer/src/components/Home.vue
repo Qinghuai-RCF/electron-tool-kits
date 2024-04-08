@@ -15,7 +15,7 @@
             <div class="fn-btn-text">安卓端B站视频快速提取</div>
           </button>
         </router-link>
-        <router-link to="/fn-2">
+        <router-link to="/folder-remarks">
           <button class="btn fn-btn">
             <img class="fn-btn-img" src="../../public/icon/标签.svg" />
             <div class="fn-btn-text">文件夹备注</div>

@@ -249,3 +249,47 @@ const saveFolderPath = () => {
     console.error('写入文件时出错:', err)
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const jsonToTableData = (jsonData) => {
+  // const table2 = {
+  //   "3ds Max 2024": "建模",
+  //   "3dsMax": "建模",
+  //   "AQUAPLUS": "游戏",
+  //   "Adobe": "多媒体",
+  //   "AliceSoft": "游戏",
+  //   "Ample Sound": "音源",
+  //   "AnLink": "安卓投屏",
+  //   "AutoHotkey": "自动热键",
+  //   "Bcut Drafts": "必剪",
+  // };
+
+  const tableData = [];
+
+  for (const folderName in jsonData) {
+    const remark = jsonData[folderName];
+    const obj = {
+      folderName: folderName,
+      remark: remark,
+    };
+    tableData.push(obj)
+  }
+
+  console.log('转换得到：', tableData)
+  return tableData
+}

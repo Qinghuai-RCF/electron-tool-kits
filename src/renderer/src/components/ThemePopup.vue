@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { ref } from 'vue'
-import store from '../../store'
+import store from '../store'
 
 const isPopupVisible = ref(false)
 
@@ -23,19 +23,17 @@ onMounted(() => {
   const themePopupObj = document.getElementById('theme-popup')
 
   document.addEventListener('click', function (e) {
-    if (e.target !== themeBtn && !themePopupObj.contains(e.target)) {
+    if (!themeBtn.contains(e.target) && !themePopupObj.contains(e.target)) {
       themeBtn.classList.remove('aside-btn-selected')
       isPopupVisible.value = false
-    }
-  })
-
-  themeBtn.addEventListener('click', function (e) {
-    if (!themeBtn.classList.contains('aside-btn-selected')) {
-      themeBtn.classList.add('aside-btn-selected')
-      isPopupVisible.value = true
-    } else if (e.target == themeBtn) {
-      themeBtn.classList.remove('aside-btn-selected')
-      isPopupVisible.value = false
+    } else if (themeBtn.contains(e.target)) {
+      if (isPopupVisible.value) {
+        themeBtn.classList.remove('aside-btn-selected')
+        isPopupVisible.value = false
+      } else {
+        themeBtn.classList.add('aside-btn-selected')
+        isPopupVisible.value = true
+      }
     }
   })
 })
@@ -69,11 +67,10 @@ onMounted(() => {
 
 <style>
 .theme-popup {
-  position: absolute;
-  z-index: 999;
-  /* display: none; */
-  bottom: 0;
-  left: 100%;
+  /* position: absolute; */
+  z-index: 20;
+  /* bottom: 0; */
+  /* left: 100%; */
   background-color: var(--color-background-2);
   border: 1px solid var(--color-background-3);
 }

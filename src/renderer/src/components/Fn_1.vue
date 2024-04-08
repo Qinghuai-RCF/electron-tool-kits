@@ -24,6 +24,13 @@ const openOutputFolder = () => {
     'E:\\User_files_sync\\Files\\Projects\\自制软件\\# 安卓端B站视频快速提取\\output'
   )
 }
+
+const openAppFolder = () => {
+  window.electronAPI.sendSignal(
+    'open-folder',
+    'E:\\User_files_sync\\Files\\Projects\\自制软件\\# 安卓端B站视频快速提取'
+  )
+}
 </script>
 
 <template>
@@ -35,6 +42,7 @@ const openOutputFolder = () => {
       <button id="run-btn" class="btn btn1" @click="runScript">运行</button>
       <button class="btn btn1" @click="openDownloadFolder">打开下载目录</button>
       <button class="btn btn1" @click="openOutputFolder">打开输出目录</button>
+      <button class="btn btn1" @click="openAppFolder">打开软件目录</button>
       <p>注意：点击运行后会<span style="color: red">清空</span>输出目录</p>
     </div>
   </div>

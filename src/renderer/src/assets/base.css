@@ -52,7 +52,7 @@
 }
 
 /* 如果用户的主题设置为暗色 */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --color-background-1: var(--dark-1);
     --color-background-2: var(--dark-2);
@@ -62,7 +62,7 @@
     --color-boder: var(--white);
     --color-selected: #0078d4;
   }
-}
+} */
 
 
 
