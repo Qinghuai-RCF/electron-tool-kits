@@ -1,50 +1,17 @@
-<!-- <script setup lang="ts">
-
-</script> -->
+<script setup lang="ts">
+import {
+  EditPen,
+  VideoCamera
+} from '@element-plus/icons-vue'
+</script>
 
 <template>
-  <header>
-    <div class="main-title">自制工具集</div>
-  </header>
-  <div class="box">
-    <div class="outer-frame">
-      <div class="fn-box">
-        <router-link to="/fn-1">
-          <button class="btn fn-btn">
-            <img class="fn-btn-img" src="../../public/icon/转换文件.svg" />
-            <div class="fn-btn-text">安卓端B站视频快速提取</div>
-          </button>
-        </router-link>
-        <router-link to="/folder-remarks">
-          <button class="btn fn-btn">
-            <img class="fn-btn-img" src="../../public/icon/标签.svg" />
-            <div class="fn-btn-text">文件夹备注</div>
-          </button>
-        </router-link>
-      </div>
-    </div>
-  </div>
+  <el-main>
+    <el-text>欢迎使用</el-text>
+  </el-main>
 </template>
 
 <style scoped>
-/* header {
-  height: 40px;
-} */
-
-.box {
-  height: calc(100vh - 49px);
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
-}
-
-.outer-frame {
-  width: 510px;
-  height: auto;
-  padding-bottom: 50px;
-}
-
 .fn-box {
   width: auto;
   height: auto;
@@ -59,26 +26,48 @@
 }
 
 .fn-btn {
+  --el-button-font-weight: var(--el-font-weight-primary);
+  --el-button-disabled-text-color: var(--el-disabled-text-color);
+  --el-button-disabled-bg-color: var(--el-fill-color-blank);
+  --el-button-disabled-border-color: var(--el-border-color-light);
+  --el-button-divide-border-color: rgba(255, 255, 255, 0.5);
+  --el-button-active-text-color: var(--el-button-hover-text-color);
+  --el-button-active-border-color: var(--el-color-primary);
+  --el-button-active-bg-color: var(--el-button-hover-bg-color);
+  --el-button-outline-color: var(--el-color-primary-light-5);
+  --el-button-hover-link-text-color: var(--el-color-info);
+  --el-button-active-color: var(--el-text-color-primary);
+  --el-button-bg-color: var(--el-fill-color-blank);
+  --el-button-border-color: var(--el-border-color);
+  --el-button-text-color: var(--el-text-color-regular);
+  --el-button-hover-bg-color: var(--el-color-primary-light-9);
+  --el-button-hover-border-color: var(--el-color-primary-light-7);
+  --el-button-hover-text-color: var(--el-color-primary);
   text-align: center;
   width: 120px;
   height: 170px;
   border-radius: 10px;
   padding: 10px;
-  background-color: var(--color-background-2);
-}
-
-.fn-btn-img {
-  width: 100px;
-  height: 100px;
-  border-radius: 5px;
-}
-
-/* .btn {
-  background-color: rgb(243, 243, 243);
   cursor: pointer;
-} */
+  background-color: var(--el-button-bg-color);
+  border: var(--el-border);
+  border-color: var(--el-button-border-color);
+  border-radius: var(--el-border-radius-base);
+  box-sizing: border-box;
+  color: var(--el-button-text-color);
+}
 
 .fn-btn:hover {
-  background-color: var(--color-background-3);
+  background-color: var(--el-button-hover-bg-color);
+  border-color: var(--el-button-hover-border-color);
+  color: var(--el-button-hover-text-color);
+  outline: none;
+}
+
+.fn-btn:active {
+  background-color: var(--el-button-active-bg-color);
+  border-color: var(--el-button-active-border-color);
+  color: var(--el-button-active-text-color);
+  outline: none;
 }
 </style>

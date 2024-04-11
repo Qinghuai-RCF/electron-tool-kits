@@ -7,7 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    copy: typeof import('./src/components/fn_2_folder_remarks/Fn_2 copy.vue')['default']
+    copy: typeof import('./src/components/folder_remarks/Fn_2 copy.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -29,9 +29,8 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElText: typeof import('element-plus/es')['ElText']
     Fn_1: typeof import('./src/components/Fn_1.vue')['default']
-    Fn_2: typeof import('./src/components/fn_2_folder_remarks/Fn_2.vue')['default']
-    'Fn_2 copy': typeof import('./src/components/fn_2_folder_remarks/Fn_2 copy.vue')['default']
-    FolderRemarks: typeof import('./src/components/fn_2_folder_remarks/FolderRemarks.vue')['default']
+    Fn_2: typeof import('./src/components/folder_remarks/Fn_2.vue')['default']
+    FolderRemarks: typeof import('./src/components/folder_remarks/FolderRemarks.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

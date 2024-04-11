@@ -35,11 +35,9 @@ const UpdateSettingData = (event, settingData) => {
   const data = JSON.parse(settingData)
 
   store.fn2Data.folderPath = data.folderPath
-  store.fn2Data.dataPath = data.dataPath
   store.fn2Data.nowFolderPath = store.fn2Data.folderPath
 
   console.log('更新默认文件夹', store.fn2Data.folderPath)
-  console.log('更新数据地址', store.fn2Data.dataPath)
 }
 
 export default {

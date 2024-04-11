@@ -2,132 +2,95 @@ import fs from 'fs'
 import { ipcMain, dialog, app } from 'electron'
 import { join } from 'path'
 import store from '../renderer/src/store'
+import dirMgr from './dirMgr'
+import fileMgr from './fileMgr'
 
-let fn2ConfigsPath
-let fn2CfgPath
-let fn2DataPath
+const fn2CfgPath = join(dirMgr.appConfigPath, 'folder_remarks_cfg.json')
+const fn2DataPath = join(dirMgr.appDataPath, 'folder_remarks_data.json')
+
 let win
 
 export const initFn2 = async (mainWindow) => {
-  console.log('开始初始化fn2')
+  console.log('开始 初始化文件夹备注功能')
   win = mainWindow
-  fn2ConfigsPath = join(store.AppData.appConfigsPath, 'fn2_folder_remarks')
-  fn2CfgPath = join(fn2ConfigsPath, 'config.json')
-  fn2DataPath = join(fn2ConfigsPath, 'data.json')
+  console.log('结束 初始化文件夹备注功能')
+}
 
-  await mkCfgDir()
-  console.log('结束创建文件夹')
+ipcMain.once('init-fn2-setting', async() => {
+  // 读取文件
+  const data = await fileMgr.readJsonSync(fn2CfgPath)
+  if (data) {
+    console.log('读取到的 JSON 数据:', data)
+    store.fn2Data.folderPath = data.folderPath
+    store.fn2Data.nowFolderPath = store.fn2Data.folderPath
+    win.webContents.send('update-fn2-setting-data', JSON.stringify({
+      folderPath: store.fn2Data.folderPath
+    }))
+  } else {
+    store.fn2Data.folderPath = app.getPath('documents')
+    store.fn2Data.nowFolderPath = store.fn2Data.folderPath
+    win.webContents.send('update-fn2-setting-data', JSON.stringify({
+      folderPath: store.fn2Data.folderPath
+    }))
+    console.log('没有设置')
+  }
+  initTable()
+})
 
-  ipcMain.on('init-fn2-setting', () => {
-    try {
-      // 读取文件
-      const data = fs.readFileSync(fn2CfgPath, 'utf8')
-      console.log('正在读取：', fn2CfgPath)
-      // 解析 JSON 数据
-      const config = JSON.parse(data)
-      console.log('读取到的 JSON 数据:', config)
-      store.fn2Data.folderPath = config.folderPath
-      store.fn2Data.nowFolderPath = store.fn2Data.folderPath
-
-      const sendData = {
-        folderPath: config.folderPath
-      }
-      mainWindow.webContents.send('update-fn2-setting-data', JSON.stringify(sendData))
-      initTable()
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        store.fn2Data.folderPath = app.getPath('documents')
-        store.fn2Data.nowFolderPath = store.fn2Data.folderPath
-        const sendData = {
-          folderPath: store.fn2Data.folderPath
-        }
-        mainWindow.webContents.send('update-fn2-setting-data', JSON.stringify(sendData))
-        console.log('没有设置')
-        initTable()
-      } else {
-        console.error('读取或解析 JSON 数据时出错:', err)
-      }
+ipcMain.on('fn2-save-new-data', (event, tData) => {
+  const data = JSON.parse(tData)
+  Object.entries(data).forEach(([key, value]) => {
+    if (value != '') {
+      store.fn2Data.remarksData[key] = value
+    } else {
+      delete store.fn2Data.remarksData[key]
     }
   })
+  updateDataFile()
+})
 
-  ipcMain.on('fn2-save-new-data', (event, tData) => {
-    const data = JSON.parse(tData)
-    Object.entries(data).forEach(([key, value]) => {
-      if (value != '') {
-        store.fn2Data.remarksData[key] = value
-      } else {
-        delete store.fn2Data.remarksData[key]
+ipcMain.on('fn2-refresh-table', () => {
+  buildTable()
+})
+
+ipcMain.on('fn2-go-to-new-path', (event, folderPath) => {
+  store.fn2Data.nowFolderPath = folderPath
+  console.log('改变文件夹路径', store.fn2Data.nowFolderPath)
+
+  buildTable()
+})
+
+ipcMain.on('update-main-fn2-defult-path', (event, folderPath) => {
+  store.fn2Data.folderPath = folderPath
+  store.fn2Data.nowFolderPath = store.fn2Data.folderPath
+
+  saveFolderPath()
+})
+
+ipcMain.on('fn2-select-folder-path', () => {
+  dialog
+    .showOpenDialog(win, {
+      properties: ['openDirectory']
+    })
+    .then((result) => {
+      if (!result.canceled) {
+        // 用户选择的文件夹路径
+        store.fn2Data.nowFolderPath = result.filePaths[0]
+
+        win.webContents.send(
+          'update-renderer-fn2-now-folder-path',
+          store.fn2Data.nowFolderPath
+        )
+        // 您可以在这里处理文件夹路径
+        buildTable()
       }
     })
-    updateDataFile()
-  })
-
-  ipcMain.on('fn2-refresh-table', () => {
-    buildTable()
-  })
-
-  ipcMain.on('fn2-go-to-new-path', (event, folderPath) => {
-    store.fn2Data.nowFolderPath = folderPath
-    console.log('改变文件夹路径', store.fn2Data.nowFolderPath)
-
-    buildTable()
-  })
-
-  ipcMain.on('update-main-fn2-defult-path', (event, folderPath) => {
-    store.fn2Data.folderPath = folderPath
-    store.fn2Data.nowFolderPath = store.fn2Data.folderPath
-
-    saveFolderPath()
-  })
-
-  ipcMain.on('fn2-select-folder-path', () => {
-    dialog
-      .showOpenDialog(win, {
-        properties: ['openDirectory']
-      })
-      .then((result) => {
-        if (!result.canceled) {
-          // 用户选择的文件夹路径
-          store.fn2Data.nowFolderPath = result.filePaths[0]
-
-          mainWindow.webContents.send(
-            'update-renderer-fn2-now-folder-path',
-            store.fn2Data.nowFolderPath
-          )
-          // 您可以在这里处理文件夹路径
-          buildTable()
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  })
-}
-
-const mkCfgDir = () => {
-  return new Promise((resolve, reject) => {
-    fs.stat(fn2ConfigsPath, (err) => {
-      if (err) {
-        // 如果文件夹不存在，则创建它
-        fs.mkdir(fn2ConfigsPath, (err) => {
-          if (err) {
-            console.error('Failed to create folder:', err)
-            reject()
-          }
-          console.log('Folder has been created successfully.', fn2ConfigsPath)
-        })
-      } else {
-        // 如果文件夹存在，则不需要创建
-        console.log('文件夹已存在：', fn2ConfigsPath)
-
-      }
+    .catch((err) => {
+      console.log(err)
     })
-    resolve()
-  })
-}
+})
 
 const initTable = async () => {
-  await mkCfgDir()
   await getData()
   buildTable()
 }
@@ -200,54 +163,25 @@ const getFolderList = (path) => {
 }
 
 const updateDataFile = () => {
-  // 将 JavaScript 对象转换回 JSON 字符串
-  const data = JSON.stringify(store.fn2Data.remarksData, null, '\t') // 使用 null 和 2 来美化 JSON 输出
-
   // 写入文件
-  try {
-    fs.writeFileSync(fn2DataPath, data, 'utf8')
-    console.log('数据已保存到文件', fn2DataPath)
-  } catch (err) {
-    console.error('写入文件时出错:', err)
-  }
+  fileMgr.writeJsonSync(fn2DataPath, store.fn2Data.remarksData)
 }
 
 const getData = async () => {
-  return new Promise((resolve, reject) => {
-    let jsonData
-    try {
-      // 读取文件
-      const data = fs.readFileSync(fn2DataPath, 'utf8')
-      // 解析 JSON 数据
-      jsonData = JSON.parse(data)
-      console.log('读取到的 JSON 数据:', jsonData)
-    } catch (err) {
-      console.error('读取或解析 JSON 数据时出错:', err)
-      reject()
+    const data = await fileMgr.readJsonSync(fn2DataPath)
+    if (data) {
+      console.log('读取到的 JSON 数据:', data)
+      Object.entries(data).forEach(([key, value]) => {
+        store.fn2Data.remarksData[key] = value
+      })
     }
-
-    Object.entries(jsonData).forEach(([key, value]) => {
-      store.fn2Data.remarksData[key] = value
-    })
-    resolve()
-  })
 }
 
 const saveFolderPath = () => {
   const tData = {
     folderPath: store.fn2Data.folderPath
   }
-
-  // 将 JavaScript 对象转换回 JSON 字符串
-  const data = JSON.stringify(tData, null, '\t') // 使用 null 和 2 来美化 JSON 输出
-
-  // 写入文件
-  try {
-    fs.writeFileSync(fn2CfgPath, data, 'utf8')
-    console.log('数据已保存到文件', fn2CfgPath)
-  } catch (err) {
-    console.error('写入文件时出错:', err)
-  }
+  fileMgr.writeJsonSync(fn2CfgPath, tData)
 }
 
 

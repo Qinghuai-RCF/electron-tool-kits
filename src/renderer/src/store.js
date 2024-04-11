@@ -2,9 +2,7 @@ import { reactive } from 'vue'
 
 const store = reactive({
   AppData: {
-    theme: '',
-    appDocPath: '',
-    appConfigsPath: ''
+    theme: ''
   },
   fn1Data: {},
   fn2Data: {

@@ -5,7 +5,7 @@ import dm from './data_management'
 import { Folder } from '@element-plus/icons-vue';
 
 
-// old
+const tableSize = ref('default')
 
 
 
@@ -57,6 +57,14 @@ const selectFolderPath = () => {
   })
 }
 
+const setTrColorClass = (cellContent) => {
+  if (cellContent.includes('游戏')) {
+    return 'fn2-tr-color-game'
+  } else if (cellContent == '') {
+    return 'fn2-tr-color-no-remark'
+  }
+}
+
 onMounted(() => {
   dm.init()
 })
@@ -65,36 +73,55 @@ onMounted(() => {
 <template>
   <el-container>
     <el-main>
-      <el-row gutter="10">
-        <el-col :span="16">
+      <el-row gutter=10>
+        <el-col>
           <el-input v-model="store.fn2Data.nowFolderPath" placeholder="请输入或选择文件夹" :suffix-icon="Folder"
             class="fn2-input" />
         </el-col>
-        <el-col :span="8">
-          <el-row gutter="10">
-            <el-col :span="12" gutter="10"><el-button class="fn2-btn1" @click="fillDefultPath">回到默认</el-button></el-col>
-            <el-col :span="12"><el-button class="fn2-btn1" @click="setAsDefultPath">设为默认</el-button></el-col>
-          </el-row>
+      </el-row>
+
+      <el-row gutter=10>
+        <el-col :span="6" gutter="10"><el-button class="fn2-btn1" @click="fillDefultPath">回到默认</el-button></el-col>
+        <el-col :span="6"><el-button class="fn2-btn1" @click="setAsDefultPath">设为默认</el-button></el-col>
+        <el-col :span="6"><el-button class="fn2-btn1" @click="selectFolderPath">选择文件夹</el-button></el-col>
+        <el-col :span="3"><el-button class="fn2-btn1" @click="goToNewPath">转到</el-button></el-col>
+        <el-col :span="3"><el-button class="fn2-btn1" @click="refreshTable">刷新</el-button></el-col>
+      </el-row>
+
+      <el-row gutter=10 justify="center">
+        <el-col  span=0>
+          <el-radio-group v-model="tableSize">
+            <el-radio-button :value="'small'">紧凑</el-radio-button>
+            <el-radio-button :value="'default'">普通</el-radio-button>
+            <el-radio-button :value="'large'">松散</el-radio-button>
+          </el-radio-group>
         </el-col>
       </el-row>
-      <el-row gutter="10">
-        <el-col :span="8"><el-button class="fn2-btn1" @click="refreshTable">刷新</el-button></el-col>
-        <el-col :span="8"><el-button class="fn2-btn1" @click="goToNewPath">转到</el-button></el-col>
-        <el-col :span="8"><el-button class="fn2-btn1" @click="selectFolderPath">选择文件夹</el-button></el-col>
-      </el-row>
-      <div class="fn2-folder-remark-body">
-        <table>
-          <tr v-for="(folder, index) in Object.keys(store.fn2Data.tableData)" :key="index">
-            <td>{{ folder }}</td>
-            <td>
-              <el-input v-model="store.fn2Data.tableData[folder]" size="large" @change="saveKeyValuePair(folder, store.fn2Data.tableData[folder])"></el-input>
-            </td>
-          </tr>
-        </table>
-      </div>
 
-      <el-row gutter="10">
-        <el-col :span="16">
+
+      <el-row gutter=10>
+        <el-col>
+          <el-card class="fn2-folder-remark-body">
+            <table>
+              <tr v-for="(folder, index) in Object.keys(store.fn2Data.tableData)" :key="index">
+                <td :class="setTrColorClass(store.fn2Data.tableData[folder])">{{ folder }}</td>
+                <td>
+                  <el-input v-model="store.fn2Data.tableData[folder]" v-bind:size="tableSize"
+                    @change="saveKeyValuePair(folder, store.fn2Data.tableData[folder])"></el-input>
+                </td>
+              </tr>
+            </table>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row gutter=10>
+        <el-col :span="8">
+          <el-button class="fn2-btn1" @click="runFolderRemarks">
+            打开QT版
+          </el-button>
+        </el-col>
+        <el-col :span="8">
           <div class="save-notification">
             <el-text type="warning" v-if="store.fn2Data.isRemarksChanged">有未保存更改</el-text>
           </div>
@@ -105,26 +132,13 @@ onMounted(() => {
           </el-button>
         </el-col>
       </el-row>
-      <el-button class="fn2-qt-folder-remarks-btn" @click="runFolderRemarks">打开QT版</el-button>
     </el-main>
   </el-container>
-
-
-
-
-
-
-
 </template>
 
 <style scoped>
-.el-main {
-
-}
-
-
 .fn2-folder-remark-body {
-  height: calc(100vh - 200px);
+  height: calc(100vh - 211px);
   /* height: 400px; */
   overflow: auto;
 }
@@ -150,6 +164,16 @@ onMounted(() => {
 }
 
 .save-notification {
-  float: right;
+  text-align: center;
+}
+
+/* fn2-tr-color */
+.fn2-tr-color-no-remark {
+  color: white;
+  background-color: var(--el-color-danger);
+}
+
+.fn2-tr-color-game {
+  background-color: rgb(234, 211, 255);
 }
 </style>

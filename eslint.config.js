@@ -1,5 +1,4 @@
-/* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
+require('@rushstack/eslint-patch/modern-module-resolution');
 
 module.exports = {
   parser: '@typescript-eslint/parser',
@@ -17,11 +16,11 @@ module.exports = {
   rules: {
     'vue/require-default-prop': 'off',
     'vue/multi-word-component-names': 'off'
-  }
-  // ignores: [
-  //   "node_modules",
-  //   "dist",
-  //   "out",
-  //   ".gitignore",
-  // ]
-}
+  },
+  ignorePatterns: [
+    "node_modules/",
+    "dist/",
+    "out/",
+    ".gitignore"
+  ]
+};
