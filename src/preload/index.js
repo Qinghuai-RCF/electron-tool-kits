@@ -1,6 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+import folderRemarks from './folderRemarks.js'
+
+
+
 // Custom APIs for renderer
 const api = {}
 
@@ -55,10 +59,23 @@ const fn1Listener = () => {
   })
 }
 
+const test = () => {
+  ipcRenderer.send('test')
+}
+
+
 // 暴露函数
 contextBridge.exposeInMainWorld('electronAPI', {
-  sendSignal,
+  // 尽早弃用
   onSignal,
+
+  sendSignal,
   onceSignal,
-  fn1Listener
+
+  fn1Listener,
+
+  test,
+
+  // fn2 文件夹备注监听器
+  folderRemarks
 })

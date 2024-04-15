@@ -1,13 +1,12 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import store from '../../store.js'
 import dm from './data_management'
-import { Folder } from '@element-plus/icons-vue';
-
+import { Folder, Warning } from '@element-plus/icons-vue'
+import '../../../../../node_modules/element-plus/theme-chalk/el-message.css'
 
 const tableSize = ref('default')
-
-
+const drawer = ref(false)
 
 const runFolderRemarks = () => {
   window.electronAPI.sendSignal(
@@ -67,6 +66,11 @@ const setTrColorClass = (cellContent) => {
 
 onMounted(() => {
   dm.init()
+  window.electronAPI.folderRemarks.initFolderRemarksListeners()
+})
+
+onUnmounted(() => {
+  window.electronAPI.folderRemarks.uninitFolderRemarksListeners()
 })
 </script>
 
@@ -84,12 +88,12 @@ onMounted(() => {
         <el-col :span="6" gutter="10"><el-button class="fn2-btn1" @click="fillDefultPath">回到默认</el-button></el-col>
         <el-col :span="6"><el-button class="fn2-btn1" @click="setAsDefultPath">设为默认</el-button></el-col>
         <el-col :span="6"><el-button class="fn2-btn1" @click="selectFolderPath">选择文件夹</el-button></el-col>
-        <el-col :span="3"><el-button class="fn2-btn1" @click="goToNewPath">转到</el-button></el-col>
         <el-col :span="3"><el-button class="fn2-btn1" @click="refreshTable">刷新</el-button></el-col>
+        <el-col :span="3"><el-button class="fn2-btn1" @click="goToNewPath" type="primary">转到</el-button></el-col>
       </el-row>
 
       <el-row gutter=10 justify="center">
-        <el-col  span=0>
+        <el-col span=0>
           <el-radio-group v-model="tableSize">
             <el-radio-button :value="'small'">紧凑</el-radio-button>
             <el-radio-button :value="'default'">普通</el-radio-button>
@@ -102,47 +106,51 @@ onMounted(() => {
       <el-row gutter=10>
         <el-col>
           <el-card class="fn2-folder-remark-body">
-            <table>
-              <tr v-for="(folder, index) in Object.keys(store.fn2Data.tableData)" :key="index">
-                <td :class="setTrColorClass(store.fn2Data.tableData[folder])">{{ folder }}</td>
-                <td>
-                  <el-input v-model="store.fn2Data.tableData[folder]" v-bind:size="tableSize"
-                    @change="saveKeyValuePair(folder, store.fn2Data.tableData[folder])"></el-input>
-                </td>
-              </tr>
-            </table>
+            <el-scrollbar height="calc(100vh - 253px)">
+              <table>
+                <tr v-for="(folder, index) in Object.keys(store.fn2Data.tableData)" :key="index">
+                  <td :class="setTrColorClass(store.fn2Data.tableData[folder])">{{ folder }}</td>
+                  <td>
+                    <el-input v-model="store.fn2Data.tableData[folder]" v-bind:size="tableSize"
+                      @change="saveKeyValuePair(folder, store.fn2Data.tableData[folder])"></el-input>
+                  </td>
+                </tr>
+              </table>
+            </el-scrollbar>
           </el-card>
         </el-col>
       </el-row>
 
       <el-row gutter=10>
-        <el-col :span="8">
-          <el-button class="fn2-btn1" @click="runFolderRemarks">
-            打开QT版
-          </el-button>
-        </el-col>
-        <el-col :span="8">
-          <div class="save-notification">
-            <el-text type="warning" v-if="store.fn2Data.isRemarksChanged">有未保存更改</el-text>
+        <el-col>
+          <div style="float: left;">
+            <el-button :icon="Warning" @click="drawer = true">说明</el-button>
+            <el-button @click="runFolderRemarks">
+              打开QT版
+            </el-button>
           </div>
-        </el-col>
-        <el-col :span="8">
-          <el-button class="fn2-btn1" @click="saveNewData" :disabled="!store.fn2Data.isRemarksChanged">
-            保存更改
-          </el-button>
+          <div style="float: right;">
+            <el-text style="margin-right: 10px;" type="warning" v-if="store.fn2Data.    isRemarksChanged">有未保存更改</el-text>
+            <el-button @click="saveNewData" :disabled="!store.fn2Data.isRemarksChanged">
+              保存更改
+            </el-button>
+          </div>
         </el-col>
       </el-row>
     </el-main>
   </el-container>
+
+  <el-drawer
+    v-model="drawer"
+    title="文件夹备份使用说明"
+    :direction="rtl"
+  >
+    <p>如果没有备注，显示红色背景</p>
+    <p>如果备注中含有“游戏”，显示紫色背景</p>
+  </el-drawer>
 </template>
 
 <style scoped>
-.fn2-folder-remark-body {
-  height: calc(100vh - 211px);
-  /* height: 400px; */
-  overflow: auto;
-}
-
 .fn2-folder-remark-body table {
   width: 100%;
 }

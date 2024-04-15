@@ -1,10 +1,12 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join, resolve } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import dirMgr from './dirMgr'
 
 import { initFn } from './fn'
+
+import { exec } from 'child_process'
 
 const WINDOW_WIDTH = 1200
 const WINDOW_HEIGHT = 670
@@ -69,6 +71,18 @@ app.whenReady().then(async () => {
   dirMgr.initDir()
   createWindow()
   initFn(win)
+
+  ipcMain.on('test', () => {
+    exec('pip list', (error, stdout, stderr) => {
+      if (error) {
+        console.error(`执行出错: ${error}`)
+      } else {
+        console.log(`stdout: ${stdout}`)
+        console.error(`stderr: ${stderr}`)
+      }
+    })
+  })
+
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

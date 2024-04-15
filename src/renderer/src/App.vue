@@ -34,7 +34,8 @@ onMounted(() => {
           <el-icon>
             <VideoCamera />
           </el-icon>
-          <span>B站视频提取</span>
+          <span>B站视频提取
+</span>
         </el-menu-item>
         <el-menu-item index="/folder-remarks">
           <el-icon>
@@ -52,7 +53,6 @@ onMounted(() => {
       <themePopup id="theme-popup"></themePopup>
     </el-aside>
     <router-view></router-view>
-
   </el-container>
 
 

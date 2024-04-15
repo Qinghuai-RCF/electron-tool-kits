@@ -20,7 +20,7 @@ const router = VueRouter.createRouter({
     {
       name: 'folder-remarks',
       path: '/folder-remarks',
-      component: FolderRemarks
+      component: FolderRemarks,
     }
   ]
 })

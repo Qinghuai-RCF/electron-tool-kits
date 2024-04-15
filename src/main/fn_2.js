@@ -158,6 +158,8 @@ const getFolderList = (path) => {
     return folders
   } catch (readError) {
     console.error('获取文件夹名时发生错误:', readError)
+    win.webContents.send('fn2-folder-open-error', readError)
+    console.log('发送fn2-folder-open-error');
     return []
   }
 }
