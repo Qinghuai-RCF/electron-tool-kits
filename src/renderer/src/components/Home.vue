@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue"
-const version = ref("0.0.6")
+const version = ref("0.0.7")
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 {
-  "name": "electron-tool-kits",
+  "name": "yueliuli-tool-kits",
   "version": "0.0.7",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
