@@ -1,5 +1,5 @@
 {
-  "name": "yueliuli-tool-kits",
+  "name": "electron-tool-kits",
   "version": "0.0.7",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
@@ -21,9 +21,11 @@
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@element-plus/icons-vue": "^2.3.1",
+    "csv-parser": "^3.0.0",
     "electron-updater": "^6.1.7",
     "element-plus": "^2.6.3",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.1",
@@ -35,7 +37,7 @@
     "electron": "^28.2.0",
     "electron-builder": "^24.9.1",
     "electron-vite": "^2.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.20.1",
     "prettier": "^3.2.4",
     "sass": "^1.74.1",

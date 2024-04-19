@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-
-// import folderRemarks from './folderRemarks.js'
+// import { ElMessage } from 'element-plus'
 
 
 
@@ -60,6 +59,38 @@ const fn1Listener = () => {
 }
 
 
+// fn2 文件夹备注监听器
+const folderOpenError = (event, error) => {
+  console.log('弹窗');
+  if (error.code === 'ENOENT') {
+    ElMessage({
+      showClose: true,
+      message: '路径不存在，请重新选择！',
+      type: 'error',
+
+      duration: 2000,
+    })
+  } else {
+    ElMessage({
+      showClose: true,
+      message: '打开路径失败，请重新选择！',
+      type: 'error',
+      duration: 2000,
+    })
+  }
+}
+
+const initFolderRemarksListeners = () => {
+  ipcRenderer.on('fn2-folder-open-error', folderOpenError)
+}
+
+const uninitFolderRemarksListeners = () => {
+  ipcRenderer.removeListener('fn2-folder-open-error', folderOpenError)
+}
+
+
+
+
 // 暴露函数
 contextBridge.exposeInMainWorld('electronAPI', {
   // 尽早弃用
@@ -71,5 +102,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   fn1Listener,
 
   // fn2 文件夹备注监听器
-  // folderRemarks
+  initFolderRemarksListeners,
+  uninitFolderRemarksListeners
 })

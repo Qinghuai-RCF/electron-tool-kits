@@ -66,11 +66,11 @@ const setTrColorClass = (cellContent) => {
 
 onMounted(() => {
   dm.init()
-  window.electronAPI.folderRemarks.initFolderRemarksListeners()
+  window.electronAPI.initFolderRemarksListeners()
 })
 
 onUnmounted(() => {
-  window.electronAPI.folderRemarks.uninitFolderRemarksListeners()
+  window.electronAPI.uninitFolderRemarksListeners()
 })
 </script>
 
@@ -185,3 +185,5 @@ onUnmounted(() => {
   background-color: rgb(234, 211, 255);
 }
 </style>
+./data_management.js
+./data_management.js

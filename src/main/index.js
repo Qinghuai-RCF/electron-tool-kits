@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join, resolve } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -6,17 +6,18 @@ import dirMgr from './dirMgr'
 
 import { initFn } from './fn'
 
+// 设置窗口大小
 const WINDOW_WIDTH = 1200
 const WINDOW_HEIGHT = 670
 const WINDOW_MIN_WIDTH = 650
 const WINDOW_MIN_HEIGHT = 500
 
-let win
+let mainWindow
 
 function createWindow() {
   console.log('开始初始化窗口')
   // Create the browser window.
-  win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
     minWidth: WINDOW_MIN_WIDTH,
@@ -30,24 +31,26 @@ function createWindow() {
     }
   })
 
-  win.on('ready-to-show', () => {
-    win.show()
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show()
   })
 
-  win.webContents.setWindowOpenHandler((details) => {
+  mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
   // 调试工具
-  win.webContents.openDevTools()
+  // if (is.dev) {
+    mainWindow.webContents.openDevTools()
+  // }
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    win.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
 
@@ -66,9 +69,12 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  // 初始化目录
   dirMgr.initDir()
+  // 初始化窗口
   createWindow()
-  initFn(win)
+  // 初始化功能
+  initFn(mainWindow)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

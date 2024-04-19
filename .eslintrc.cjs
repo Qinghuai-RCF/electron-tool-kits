@@ -18,10 +18,4 @@ module.exports = {
     'vue/require-default-prop': 'off',
     'vue/multi-word-component-names': 'off'
   }
-  // ignores: [
-  //   "node_modules",
-  //   "dist",
-  //   "out",
-  //   ".gitignore",
-  // ]
 }
