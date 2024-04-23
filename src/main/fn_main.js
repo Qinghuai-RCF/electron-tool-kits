@@ -14,6 +14,7 @@ export const initFnMain = (mainWindow) => {
   initChangeTheme()
   initCmdExec()
   initOpenFolder()
+  initDevTools()
 }
 
 const initChangeTheme = () => {
@@ -83,7 +84,7 @@ const initTheme = async () => {
   console.log('初始化主题')
   const config = await fileMgr.readJsonSync(mainCfgPath)
   if (config) {
-    console.log('读取到默认主题');
+    console.log('读取到默认主题')
     store.AppData.theme = config.theme
     nativeTheme.themeSource = store.AppData.theme
     updateThemeData()
@@ -104,4 +105,10 @@ const changeAndSaveTheme = (theme) => {
 const updateThemeData = () => {
   const themeDataString = JSON.stringify(store.AppData.theme)
   win.webContents.send('update-theme-data', themeDataString)
+}
+
+const initDevTools = () => {
+  ipcMain.on('open-devtools', () => {
+    win.webContents.openDevTools()
+  })
 }

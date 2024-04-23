@@ -1,8 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-// import { ElMessage } from 'element-plus'
-
-
+import { ElMessage } from 'element-plus'
 
 // Custom APIs for renderer
 const api = {}
@@ -37,6 +35,10 @@ const onceSignal = (signal, callback) => {
   ipcRenderer.once(signal, callback)
 }
 
+const sendOpenDevTools = () => {
+  ipcRenderer.send('open-devtools')
+}
+
 // 监听
 const fn1Listener = () => {
   console.log('fn1Listener')
@@ -58,7 +60,6 @@ const fn1Listener = () => {
   })
 }
 
-
 // fn2 文件夹备注监听器
 const folderOpenError = (event, error) => {
   console.log('弹窗');
@@ -68,14 +69,14 @@ const folderOpenError = (event, error) => {
       message: '路径不存在，请重新选择！',
       type: 'error',
 
-      duration: 2000,
+      duration: 2000
     })
   } else {
     ElMessage({
       showClose: true,
       message: '打开路径失败，请重新选择！',
       type: 'error',
-      duration: 2000,
+      duration: 2000
     })
   }
 }
@@ -88,9 +89,6 @@ const uninitFolderRemarksListeners = () => {
   ipcRenderer.removeListener('fn2-folder-open-error', folderOpenError)
 }
 
-
-
-
 // 暴露函数
 contextBridge.exposeInMainWorld('electronAPI', {
   // 尽早弃用
@@ -98,6 +96,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   sendSignal,
   onceSignal,
+
+  sendOpenDevTools,
 
   fn1Listener,
 

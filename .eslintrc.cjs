@@ -2,17 +2,11 @@
 require('@rushstack/eslint-patch/modern-module-resolution')
 
 module.exports = {
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 2021,
-    sourceType: 'module'
-  },
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-recommended',
     '@electron-toolkit',
-    '@vue/eslint-config-prettier',
-    'plugin:@typescript-eslint/recommended'
+    '@vue/eslint-config-prettier'
   ],
   rules: {
     'vue/require-default-prop': 'off',

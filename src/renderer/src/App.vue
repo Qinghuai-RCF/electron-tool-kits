@@ -1,18 +1,12 @@
 <script setup>
 import themePopup from './components/ThemePopup.vue'
-import {
-  HomeFilled,
-  TurnOff,
-  EditPen,
-  VideoCamera
-} from '@element-plus/icons-vue'
+import { HomeFilled, TurnOff, EditPen, VideoCamera } from '@element-plus/icons-vue'
 
 import { onMounted } from 'vue'
 import store from './store'
 
 onMounted(() => {
   window.electronAPI.sendSignal('get-theme-data')
-
   window.electronAPI.onSignal('update-theme-data', (event, themeDataString) => {
     const themeData = JSON.parse(themeDataString)
     store.AppData.theme = themeData
@@ -52,10 +46,7 @@ onMounted(() => {
       <themePopup id="theme-popup"></themePopup>
     </el-aside>
     <router-view></router-view>
-
   </el-container>
-
-
 </template>
 
 <style>
