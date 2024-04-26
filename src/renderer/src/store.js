@@ -4,9 +4,14 @@ const store = reactive({
   AppData: {
     theme: '',
     appDocPath: '',
-    appConfigsPath: ''
+    appConfigsPath: '',
+    libPath: ''
   },
-  fn1Data: {},
+  fn1Data: {
+    BDownloadDir: '',
+    outPutDir: '',
+    cleanOutputDir: false
+  },
   fn2Data: {
     dataPath: '',
     folderPath: '',

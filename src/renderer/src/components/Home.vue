@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 // 打开开发者工具
 
-const version = ref('0.0.7')
+const version = ref('0.0.10')
 
 const openDevTools = () => {
   window.electronAPI.sendOpenDevTools()

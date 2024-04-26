@@ -16,22 +16,28 @@ export const initFn2 = async (mainWindow) => {
   console.log('结束 初始化文件夹备注功能')
 }
 
-ipcMain.once('init-fn2-setting', async() => {
+ipcMain.on('init-fn2-setting', async () => {
   // 读取文件
   const data = await fileMgr.readJsonSync(fn2CfgPath)
   if (data) {
     console.log('读取到的 JSON 数据:', data)
     store.fn2Data.folderPath = data.folderPath
     store.fn2Data.nowFolderPath = store.fn2Data.folderPath
-    win.webContents.send('update-fn2-setting-data', JSON.stringify({
-      folderPath: store.fn2Data.folderPath
-    }))
+    win.webContents.send(
+      'update-fn2-setting-data',
+      JSON.stringify({
+        folderPath: store.fn2Data.folderPath
+      })
+    )
   } else {
     store.fn2Data.folderPath = app.getPath('documents')
     store.fn2Data.nowFolderPath = store.fn2Data.folderPath
-    win.webContents.send('update-fn2-setting-data', JSON.stringify({
-      folderPath: store.fn2Data.folderPath
-    }))
+    win.webContents.send(
+      'update-fn2-setting-data',
+      JSON.stringify({
+        folderPath: store.fn2Data.folderPath
+      })
+    )
     console.log('没有设置')
   }
   initTable()
@@ -77,10 +83,7 @@ ipcMain.on('fn2-select-folder-path', () => {
         // 用户选择的文件夹路径
         store.fn2Data.nowFolderPath = result.filePaths[0]
 
-        win.webContents.send(
-          'update-renderer-fn2-now-folder-path',
-          store.fn2Data.nowFolderPath
-        )
+        win.webContents.send('update-renderer-fn2-now-folder-path', store.fn2Data.nowFolderPath)
         // 您可以在这里处理文件夹路径
         buildTable()
       }
@@ -159,24 +162,24 @@ const getFolderList = (path) => {
   } catch (readError) {
     console.error('获取文件夹名时发生错误:', readError)
     win.webContents.send('fn2-folder-open-error', readError)
-    console.log('发送fn2-folder-open-error');
+    console.log('发送fn2-folder-open-error')
     return []
   }
 }
 
 const updateDataFile = () => {
   // 写入文件
-  fileMgr.writeJsonSync(fn2DataPath, store.fn2Data.remarksData)
+  fileMgr.writeJsonSync(fn2DataPath, store.fn1Data.remarksData)
 }
 
 const getData = async () => {
-    const data = await fileMgr.readJsonSync(fn2DataPath)
-    if (data) {
-      console.log('读取到的 JSON 数据:', data)
-      Object.entries(data).forEach(([key, value]) => {
-        store.fn2Data.remarksData[key] = value
-      })
-    }
+  const data = await fileMgr.readJsonSync(fn2DataPath)
+  if (data) {
+    console.log('读取到的 JSON 数据:', data)
+    Object.entries(data).forEach(([key, value]) => {
+      store.fn2Data.remarksData[key] = value
+    })
+  }
 }
 
 const saveFolderPath = () => {

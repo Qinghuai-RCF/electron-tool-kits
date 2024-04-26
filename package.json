@@ -1,6 +1,6 @@
 {
   "name": "electron-tool-kits",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
   "author": "example.com",

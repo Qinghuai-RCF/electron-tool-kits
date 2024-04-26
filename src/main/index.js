@@ -41,9 +41,9 @@ function createWindow() {
   })
 
   // 调试工具
-  if (is.dev) {
+  // if (is.dev) {
     mainWindow.webContents.openDevTools()
-  }
+  // }
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.

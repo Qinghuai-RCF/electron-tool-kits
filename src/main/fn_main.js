@@ -4,6 +4,7 @@ import store from '../renderer/src/store'
 import dirMgr from './dirMgr'
 import fileMgr from './fileMgr'
 import { join } from 'path'
+import { is } from '@electron-toolkit/utils'
 
 const mainCfgPath = join(dirMgr.appConfigPath, 'main_cfg.josn')
 
@@ -15,6 +16,7 @@ export const initFnMain = (mainWindow) => {
   initCmdExec()
   initOpenFolder()
   initDevTools()
+  initLibPath()
 }
 
 const initChangeTheme = () => {
@@ -111,4 +113,14 @@ const initDevTools = () => {
   ipcMain.on('open-devtools', () => {
     win.webContents.openDevTools()
   })
+}
+
+const initLibPath = () => {
+  if (is.dev) {
+    // 开发环境下，libPath指向开发环境的lib目录
+    store.AppData.libPath = './lib'
+  } else {
+    // 生产环境下，libPath指向安装目录的lib目录
+    store.AppData.libPath = 'resources/app.asar.unpacked/lib'
+  }
 }

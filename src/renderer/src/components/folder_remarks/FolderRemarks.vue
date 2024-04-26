@@ -8,13 +8,6 @@ import '../../../../../node_modules/element-plus/theme-chalk/el-message.css'
 const tableSize = ref('default')
 const drawer = ref(false)
 
-const runFolderRemarks = () => {
-  window.electronAPI.sendSignal(
-    'request-cmd',
-    'E:\\User_files_sync\\Files\\Projects\\自制软件\\文件夹备注\\FolderRemarks.exe'
-  )
-}
-
 const refreshTable = () => {
   window.electronAPI.sendSignal('fn2-refresh-table')
   store.fn2Data.isRemarksChanged = false
@@ -77,23 +70,37 @@ onUnmounted(() => {
 <template>
   <el-container>
     <el-main>
-      <el-row gutter=10>
+      <el-row gutter="10">
         <el-col>
-          <el-input v-model="store.fn2Data.nowFolderPath" placeholder="请输入或选择文件夹" :suffix-icon="Folder"
-            class="fn2-input" />
+          <el-input
+            v-model="store.fn2Data.nowFolderPath"
+            placeholder="请输入或选择文件夹"
+            :suffix-icon="Folder"
+            class="fn2-input"
+          />
         </el-col>
       </el-row>
 
-      <el-row gutter=10>
-        <el-col :span="6" gutter="10"><el-button class="fn2-btn1" @click="fillDefultPath">回到默认</el-button></el-col>
-        <el-col :span="6"><el-button class="fn2-btn1" @click="setAsDefultPath">设为默认</el-button></el-col>
-        <el-col :span="6"><el-button class="fn2-btn1" @click="selectFolderPath">选择文件夹</el-button></el-col>
-        <el-col :span="3"><el-button class="fn2-btn1" @click="refreshTable">刷新</el-button></el-col>
-        <el-col :span="3"><el-button class="fn2-btn1" @click="goToNewPath" type="primary">转到</el-button></el-col>
+      <el-row gutter="10">
+        <el-col :span="6" gutter="10"
+          ><el-button class="fn2-btn1" @click="fillDefultPath">回到默认</el-button></el-col
+        >
+        <el-col :span="6"
+          ><el-button class="fn2-btn1" @click="setAsDefultPath">设为默认</el-button></el-col
+        >
+        <el-col :span="6"
+          ><el-button class="fn2-btn1" @click="selectFolderPath">选择文件夹</el-button></el-col
+        >
+        <el-col :span="3"
+          ><el-button class="fn2-btn1" @click="refreshTable">刷新</el-button></el-col
+        >
+        <el-col :span="3"
+          ><el-button class="fn2-btn1" type="primary" @click="goToNewPath">转到</el-button></el-col
+        >
       </el-row>
 
-      <el-row gutter=10 justify="center">
-        <el-col span=0>
+      <el-row gutter="10" justify="center">
+        <el-col span="0">
           <el-radio-group v-model="tableSize">
             <el-radio-button :value="'small'">紧凑</el-radio-button>
             <el-radio-button :value="'default'">普通</el-radio-button>
@@ -102,8 +109,7 @@ onUnmounted(() => {
         </el-col>
       </el-row>
 
-
-      <el-row gutter=10>
+      <el-row gutter="10">
         <el-col>
           <el-card class="fn2-folder-remark-body">
             <el-scrollbar height="calc(100vh - 253px)">
@@ -111,8 +117,11 @@ onUnmounted(() => {
                 <tr v-for="(folder, index) in Object.keys(store.fn2Data.tableData)" :key="index">
                   <td :class="setTrColorClass(store.fn2Data.tableData[folder])">{{ folder }}</td>
                   <td>
-                    <el-input v-model="store.fn2Data.tableData[folder]" v-bind:size="tableSize"
-                      @change="saveKeyValuePair(folder, store.fn2Data.tableData[folder])"></el-input>
+                    <el-input
+                      v-model="store.fn2Data.tableData[folder]"
+                      :size="tableSize"
+                      @change="saveKeyValuePair(folder, store.fn2Data.tableData[folder])"
+                    ></el-input>
                   </td>
                 </tr>
               </table>
@@ -121,17 +130,20 @@ onUnmounted(() => {
         </el-col>
       </el-row>
 
-      <el-row gutter=10>
+      <el-row gutter="10">
         <el-col>
-          <div style="float: left;">
+          <div style="float: left">
             <el-button :icon="Warning" @click="drawer = true">说明</el-button>
-            <el-button @click="runFolderRemarks">
-              打开QT版
-            </el-button>
           </div>
-          <div style="float: right;">
-            <el-text style="margin-right: 10px;" type="warning" v-if="store.fn2Data.    isRemarksChanged">有未保存更改</el-text>
-            <el-button @click="saveNewData" :disabled="!store.fn2Data.isRemarksChanged">
+          <div style="float: right">
+            <el-text v-if="store.fn2Data.isRemarksChanged" style="margin-right: 10px" type="error"
+              >有未保存更改</el-text
+            >
+            <el-button
+              :disabled="!store.fn2Data.isRemarksChanged"
+              type="primary"
+              @click="saveNewData"
+            >
               保存更改
             </el-button>
           </div>
@@ -140,11 +152,7 @@ onUnmounted(() => {
     </el-main>
   </el-container>
 
-  <el-drawer
-    v-model="drawer"
-    title="文件夹备份使用说明"
-    :direction="rtl"
-  >
+  <el-drawer v-model="drawer" title="文件夹备份使用说明" :direction="rtl">
     <p>如果没有备注，显示红色背景</p>
     <p>如果备注中含有“游戏”，显示紫色背景</p>
   </el-drawer>
@@ -164,7 +172,7 @@ onUnmounted(() => {
 }
 
 .el-row {
-  margin-bottom: 10px;
+  margin-bottom: var(--gap);
 }
 
 .el-row:last-child {
@@ -185,5 +193,4 @@ onUnmounted(() => {
   background-color: rgb(234, 211, 255);
 }
 </style>
-./data_management.js
-./data_management.js
+./data_management.js ./data_management.js

@@ -1,7 +1,7 @@
 import * as VueRouter from 'vue-router'
 
 import Home from '../components/Home.vue'
-import Fn_1 from '../components/Fn_1.vue'
+import BlblVidExtr from '../components/BlblVidExtr.vue'
 import FolderRemarks from '../components/folder_remarks/FolderRemarks.vue'
 
 const router = VueRouter.createRouter({
@@ -15,7 +15,7 @@ const router = VueRouter.createRouter({
     {
       name: 'fn-1',
       path: '/fn-1',
-      component: Fn_1
+      component: BlblVidExtr
     },
     {
       name: 'folder-remarks',
