@@ -6,7 +6,7 @@ import fileMgr from './fileMgr'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 
-const mainCfgPath = join(dirMgr.appConfigPath, 'main_cfg.josn')
+const mainCfgPath = join(dirMgr.appConfigPath, 'main_cfg.json')
 
 let win
 
@@ -41,6 +41,7 @@ const initChangeTheme = () => {
 
 const initCmdExec = () => {
   ipcMain.on('request-cmd', (event, command) => {
+    console.log('执行命令：', command)
     // 验证命令是否安全
     if (isCommandSafe(command)) {
       // 如果命令安全，则在主进程中执行
@@ -100,7 +101,9 @@ const initTheme = async () => {
 const changeAndSaveTheme = (theme) => {
   store.AppData.theme = theme
   nativeTheme.themeSource = store.AppData.theme
-  fileMgr.writeJsonSync(mainCfgPath, store.AppData)
+  fileMgr.writeJsonSync(mainCfgPath, {
+    theme: store.AppData.theme
+  })
   updateThemeData()
 }
 

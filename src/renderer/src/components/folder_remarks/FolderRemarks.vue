@@ -111,7 +111,7 @@ onUnmounted(() => {
 
       <el-row gutter="10">
         <el-col>
-          <el-card class="fn2-folder-remark-body">
+          <div class="fn2-folder-remark-body">
             <el-scrollbar height="calc(100vh - 253px)">
               <table>
                 <tr v-for="(folder, index) in Object.keys(store.fn2Data.tableData)" :key="index">
@@ -126,7 +126,7 @@ onUnmounted(() => {
                 </tr>
               </table>
             </el-scrollbar>
-          </el-card>
+          </div>
         </el-col>
       </el-row>
 
@@ -159,6 +159,12 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.fn2-folder-remark-body {
+  width: 100%;
+  border: 1px solid var(--el-border-color);
+  border-radius: var(--el-border-radius-base);
+}
+
 .fn2-folder-remark-body table {
   width: 100%;
 }
@@ -169,14 +175,6 @@ onUnmounted(() => {
 
 .fn2-input {
   width: 100%;
-}
-
-.el-row {
-  margin-bottom: var(--gap);
-}
-
-.el-row:last-child {
-  margin-bottom: 0;
 }
 
 .save-notification {

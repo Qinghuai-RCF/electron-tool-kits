@@ -216,14 +216,6 @@ const updateMainBlblVidExtrCfg = () => {
   min-width: 0;
 }
 
-.el-row {
-  margin-bottom: var(--gap);
-}
-
-.el-row:last-child {
-  margin-bottom: 0;
-}
-
 .left-margin {
   margin-left: var(--gap);
 }

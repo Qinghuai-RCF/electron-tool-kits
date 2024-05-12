@@ -142,3 +142,24 @@ input {
   vertical-align:middle;
 }
 
+
+
+/* element-plus 样式 */
+.border-box {
+  border: 1px solid var(--el-border-color);
+  border-radius: var(--el-border-radius-base);
+}
+
+
+.el-col .el-button {
+  width: 100%;
+}
+
+.el-row {
+  margin-bottom: var(--gap);
+}
+
+.el-row:last-child {
+  margin-bottom: 0;
+}
+

@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: electron-vue-app
+appId: com.yueliuli-tool-kits.app
+productName: yueliuli-tool-kits
 directories:
   buildResources: build
 files:
@@ -15,7 +15,7 @@ asarUnpack:
   - resources/**
   - lib/**
 win:
-  executableName: electron-vue-app
+  executableName: yueliuli-tool-kits
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

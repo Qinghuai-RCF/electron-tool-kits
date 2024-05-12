@@ -20,6 +20,14 @@ const store = reactive({
     isRemarksChanged: false,
     remarksData: {},
     newData: {}
+  },
+  AudioExtraction: {
+    settings: {
+      isCustomFolder: false,
+      customFolder: ''
+    },
+    fileList: [],
+    isEmpty: true
   }
 })
 

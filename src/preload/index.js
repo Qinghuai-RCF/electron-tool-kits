@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 // import { ElMessage } from 'element-plus'
+// import store from '../renderer/src/store'
 
 // Custom APIs for renderer
 const api = {}
@@ -62,13 +63,21 @@ const folderOpenError = (event, error) => {
   }
 }
 
+// 音频转码监听器
+const updateAudioExtractionFileListToRenderer = (event, fileList) => {
+  console.log('更新音频转码文件列表', fileList)
+}
+
 // 文件夹备注监听器
 const initFolderRemarksListeners = () => {
   ipcRenderer.on('fn2-folder-open-error', folderOpenError)
 }
 
 const uninitFolderRemarksListeners = () => {
-  ipcRenderer.removeListener('fn2-folder-open-error', folderOpenError)
+  ipcRenderer.removeListener(
+    'update-audio-extraction-file-list-to-renderer',
+    updateAudioExtractionFileListToRenderer
+  )
 }
 
 // 暴露函数
@@ -83,5 +92,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // fn2 文件夹备注监听器
   initFolderRemarksListeners,
-  uninitFolderRemarksListeners
+  uninitFolderRemarksListeners,
 })

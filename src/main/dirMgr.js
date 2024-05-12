@@ -1,9 +1,9 @@
-const fs = require('fs').promises;
+const fs = require('fs').promises
 import { join } from 'path'
 import { app } from 'electron'
 
 // 软件文档目录
-const appDocPath = join(app.getPath('documents'), 'electron-tool-kits')
+const appDocPath = join(app.getPath('documents'), 'yueliuli-tool-kits')
 // 必要文件夹目录
 const appDataPath = join(appDocPath, 'data')
 const appConfigPath = join(appDocPath, 'config')
@@ -17,9 +17,9 @@ const initDir = async () => {
 const makeDir = async (path) => {
   try {
     console.log('开始创建文件夹', path)
-    await fs.access(path); // 检查路径是否存在
+    await fs.access(path) // 检查路径是否存在
     console.log('文件夹已存在：', path)
-    return; // 文件夹已存在，退出函数
+    return // 文件夹已存在，退出函数
   } catch (err) {
     if (err.code !== 'ENOENT') {
       // 其他错误，抛出以通知调用者

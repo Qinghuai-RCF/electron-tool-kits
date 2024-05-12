@@ -1,6 +1,6 @@
 <script setup>
 import themePopup from './components/ThemePopup.vue'
-import { HomeFilled, TurnOff, EditPen, VideoCamera } from '@element-plus/icons-vue'
+import { HomeFilled, TurnOff, EditPen, VideoCamera, Switch } from '@element-plus/icons-vue'
 
 import { onMounted } from 'vue'
 import store from './store'
@@ -36,7 +36,14 @@ onMounted(() => {
           </el-icon>
           <span>文件夹备注</span>
         </el-menu-item>
+        <el-menu-item index="/audio-extraction">
+          <el-icon>
+            <Switch />
+          </el-icon>
+          <span>音视频转码</span>
+        </el-menu-item>
       </el-menu>
+
       <el-button id="theme-btn">
         <el-icon>
           <TurnOff />
