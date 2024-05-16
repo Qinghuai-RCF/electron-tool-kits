@@ -7,10 +7,15 @@ import dirMgr from './dirMgr'
 import { initFn } from './fn'
 
 // 设置窗口大小
-const WINDOW_WIDTH = 1200
+let WINDOW_WIDTH
 const WINDOW_HEIGHT = 670
 const WINDOW_MIN_WIDTH = 650
 const WINDOW_MIN_HEIGHT = 500
+if (is.dev) {
+  WINDOW_WIDTH = 1200
+} else {
+  WINDOW_WIDTH = 1000
+}
 
 let mainWindow
 

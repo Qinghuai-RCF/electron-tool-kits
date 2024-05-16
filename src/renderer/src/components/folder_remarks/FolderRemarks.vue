@@ -189,6 +189,7 @@ onUnmounted(() => {
 
 .fn2-tr-color-game {
   background-color: rgb(234, 211, 255);
+  color: black;
 }
 </style>
 ./data_management.js ./data_management.js

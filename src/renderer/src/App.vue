@@ -1,56 +1,23 @@
 <script setup>
-import themePopup from './components/ThemePopup.vue'
-import { HomeFilled, TurnOff, EditPen, VideoCamera, Switch } from '@element-plus/icons-vue'
-
 import { onMounted } from 'vue'
-import store from './store'
+import RootNavigation from './components/RootNavigation.vue'
+import { useDark } from '@vueuse/core'
+
+const isDark = useDark({
+  storageKey: 'vitepress-theme-appearance'
+})
 
 onMounted(() => {
-  window.electronAPI.sendSignal('get-theme-data')
-  window.electronAPI.onSignal('update-theme-data', (event, themeDataString) => {
-    const themeData = JSON.parse(themeDataString)
-    store.AppData.theme = themeData
+  window.electronAPI.initIsDark((isDarkResult) => {
+    isDark.value = isDarkResult
   })
 })
 </script>
 
 <template>
   <el-container>
-    <el-aside id="menu-container" width="180px">
-      <el-menu default-active="/" router>
-        <el-menu-item index="/">
-          <el-icon>
-            <HomeFilled />
-          </el-icon>
-          <span>主页</span>
-        </el-menu-item>
-        <el-menu-item index="/fn-1">
-          <el-icon>
-            <VideoCamera />
-          </el-icon>
-          <span>B站视频提取</span>
-        </el-menu-item>
-        <el-menu-item index="/folder-remarks">
-          <el-icon>
-            <EditPen />
-          </el-icon>
-          <span>文件夹备注</span>
-        </el-menu-item>
-        <el-menu-item index="/audio-extraction">
-          <el-icon>
-            <Switch />
-          </el-icon>
-          <span>音视频转码</span>
-        </el-menu-item>
-      </el-menu>
-
-      <el-button id="theme-btn">
-        <el-icon>
-          <TurnOff />
-        </el-icon>
-        主题
-      </el-button>
-      <themePopup id="theme-popup"></themePopup>
+    <el-aside width="180px">
+      <RootNavigation />
     </el-aside>
     <router-view></router-view>
   </el-container>
@@ -61,10 +28,6 @@ onMounted(() => {
 
 .el-container {
   height: 100vh;
-}
-
-.el-menu {
-  border-right: none;
 }
 
 .el-aside {

@@ -33,8 +33,9 @@ declare module 'vue' {
     ElText: typeof import('element-plus/es')['ElText']
     FolderRemarks: typeof import('./src/components/folder_remarks/FolderRemarks.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
+    RootNavigation: typeof import('./src/components/RootNavigation.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    ThemePopup: typeof import('./src/components/ThemePopup.vue')['default']
+    Test: typeof import('./src/components/Test.vue')['default']
   }
 }

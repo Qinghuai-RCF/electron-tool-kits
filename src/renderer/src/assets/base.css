@@ -98,8 +98,8 @@ button:focus {
 
 body {
   min-height: 100vh;
-  color: var(--color-text-1);
-  background: var(--color-background-1);
+  /* color: var(--color-text-1); */
+  /* background: var(--color-background-1); */
   line-height: 1.6;
   font-family:
     Inter,

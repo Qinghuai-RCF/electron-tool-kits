@@ -21,16 +21,13 @@ export const initFnMain = (mainWindow) => {
 
 const initChangeTheme = () => {
   ipcMain.on('system-theme', () => {
-    changeAndSaveTheme('system')
-    updateThemeData()
+    changeSaveUpdateTheme('system')
   })
   ipcMain.on('light-theme', () => {
-    changeAndSaveTheme('light')
-    updateThemeData()
+    changeSaveUpdateTheme('light')
   })
   ipcMain.on('dark-theme', () => {
-    changeAndSaveTheme('dark')
-    updateThemeData()
+    changeSaveUpdateTheme('dark')
   })
 
   // 主动获取主题数据
@@ -88,22 +85,23 @@ const initTheme = async () => {
   const config = await fileMgr.readJsonSync(mainCfgPath)
   if (config) {
     console.log('读取到默认主题')
-    store.AppData.theme = config.theme
-    nativeTheme.themeSource = store.AppData.theme
-    updateThemeData()
+    changeSaveUpdateTheme(config.theme)
   } else {
     // 文件不存在，尝试创建文件
     console.log('主设置文件不存在，尝试创建文件')
-    changeAndSaveTheme('system')
+    changeSaveUpdateTheme('system')
   }
+  console.log('是否黑暗模式', nativeTheme.shouldUseDarkColors)
 }
 
-const changeAndSaveTheme = (theme) => {
+const changeSaveUpdateTheme = (theme) => {
   store.AppData.theme = theme
   nativeTheme.themeSource = store.AppData.theme
+  console.log('是否黑暗模式', nativeTheme.shouldUseDarkColors)
   fileMgr.writeJsonSync(mainCfgPath, {
     theme: store.AppData.theme
   })
+  updateIsDark()
   updateThemeData()
 }
 
@@ -127,3 +125,10 @@ const initLibPath = () => {
     store.AppData.libPath = 'resources/app.asar.unpacked/lib'
   }
 }
+
+const updateIsDark = () => {
+  win.webContents.send('update-is-dark', nativeTheme.shouldUseDarkColors)
+}
+ipcMain.on('init-is-dark', () => {
+  updateIsDark()
+})

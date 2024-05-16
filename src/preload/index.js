@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { initTestListeners, uninitTestListeners, sendTest } from './testListeners.mjs'
 // import { ElMessage } from 'element-plus'
 // import store from '../renderer/src/store'
 
@@ -63,23 +64,25 @@ const folderOpenError = (event, error) => {
   }
 }
 
-// 音频转码监听器
-const updateAudioExtractionFileListToRenderer = (event, fileList) => {
-  console.log('更新音频转码文件列表', fileList)
-}
-
 // 文件夹备注监听器
 const initFolderRemarksListeners = () => {
+  console.log('初始化文件夹备注监听器')
   ipcRenderer.on('fn2-folder-open-error', folderOpenError)
 }
 
 const uninitFolderRemarksListeners = () => {
-  ipcRenderer.removeListener(
-    'update-audio-extraction-file-list-to-renderer',
-    updateAudioExtractionFileListToRenderer
-  )
+  console.log('取消文件夹备注监听器')
+  ipcRenderer.removeListener('fn2-folder-open-error', folderOpenError)
 }
 
+const initIsDark = (callback) => {
+  console.log('初始化element-plus暗黑模式')
+  // 持续监听isDark
+  ipcRenderer.on('update-is-dark', (event, isDark) => {
+    callback(isDark)
+  })
+  ipcRenderer.send('init-is-dark')
+}
 // 暴露函数
 contextBridge.exposeInMainWorld('electronAPI', {
   // 尽早弃用
@@ -93,4 +96,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // fn2 文件夹备注监听器
   initFolderRemarksListeners,
   uninitFolderRemarksListeners,
+
+  // 测试监听器
+  initTestListeners,
+  uninitTestListeners,
+  sendTest,
+
+  initIsDark
 })
