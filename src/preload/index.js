@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { initTestListeners, uninitTestListeners, sendTest } from './testListeners.mjs'
+import { setAudioExtractionListener, removeAudioExtractionListener } from './audioExtraction.mjs'
 // import { ElMessage } from 'element-plus'
 // import store from '../renderer/src/store'
 
@@ -97,10 +97,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   initFolderRemarksListeners,
   uninitFolderRemarksListeners,
 
-  // 测试监听器
-  initTestListeners,
-  uninitTestListeners,
-  sendTest,
+  // fn2 文件夹备注监听器
+  setAudioExtractionListener,
+  removeAudioExtractionListener,
 
   initIsDark
 })

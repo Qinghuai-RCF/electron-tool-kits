@@ -36,13 +36,7 @@ onMounted(() => {
       <el-icon>
         <Switch />
       </el-icon>
-      <span>音视频转码</span>
-    </el-menu-item>
-    <el-menu-item index="/test">
-      <el-icon>
-        <Switch />
-      </el-icon>
-      <span>测试页面</span>
+      <span>视频转mp4</span>
     </el-menu-item>
   </el-menu>
 </template>

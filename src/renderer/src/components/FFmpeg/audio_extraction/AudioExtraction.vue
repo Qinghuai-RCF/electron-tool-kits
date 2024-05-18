@@ -1,12 +1,24 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { Folder, Select, Loading } from '@element-plus/icons-vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
+import { Folder, Check, Delete, Close } from '@element-plus/icons-vue'
 import store from '../../../store.js'
-
-// let store = store()
 
 console.log('载入AudioExtraction组件')
 console.log('store.AudioExtraction.isCustomFolder：', store.AudioExtraction.settings.isCustomFolder)
+
+const loadding = ref({
+  progress: 0,
+  total: 0
+})
+
+const showProgress1 = computed(() => loadding.value.progress == 0)
+const showProgress2 = computed(() => loadding.value.progress > 0)
+const showProgress = ref(false)
+const progressStatus = ref('')
+const duration = computed(() => Math.floor(percentage.value / 10))
+const percentage = computed(() =>
+  Math.floor((loadding.value.progress / loadding.value.total) * 100)
+)
 
 let isReadyToUpdateSettings = true
 const isReadyToStartAudioExtraction = ref(true)
@@ -100,15 +112,15 @@ const startAudioExtraction = () => {
 const listenForResult = () => {
   if (isReadyToStartAudioExtraction.value) {
     console.log('监听音频转换结果')
+    loadding.value.total = store.AudioExtraction.fileList.length
+    loadding.value.progress = 0
+    progressStatus.value = ''
+    showProgress.value = true
     isReadyToStartAudioExtraction.value = false
-    window.electronAPI.onceSignal(
-      'update-audio-extraction-file-list-to-renderer',
-      (event, fileList) => {
-        store.AudioExtraction.fileList = JSON.parse(fileList)
-        console.log('从主进程获取音频转换结果：', store.AudioExtraction.fileList)
-        isReadyToStartAudioExtraction.value = true
-      }
-    )
+    window.electronAPI.onceSignal('audio-extraction-done', () => {
+      isReadyToStartAudioExtraction.value = true
+      progressStatus.value = 'success'
+    })
   } else {
     console.log('监听音频转换结果失败，已存在')
   }
@@ -139,7 +151,7 @@ onMounted(() => {
           }
         }
         if (notExists) {
-          const newFile = { name: files[i].name, path: files[i].path, isDone: false }
+          const newFile = { name: files[i].name, path: files[i].path, result: '' }
           store.AudioExtraction.fileList.push(newFile)
           console.log('文件添加成功：', newFile)
           store.AudioExtraction.isEmpty = false
@@ -153,6 +165,19 @@ onMounted(() => {
     // 阻止默认行为，阻止文件打开
     event.preventDefault()
   })
+
+  window.electronAPI.setAudioExtractionListener((dataReceive) => {
+    dataReceive = JSON.parse(dataReceive)
+    console.log('main发来的文件列表', dataReceive.fileList)
+    console.log('main发来的进度', dataReceive.progress)
+    store.AudioExtraction.fileList = dataReceive.fileList
+    loadding.value.progress = dataReceive.progress
+    percentage.value = (loadding.value.progress / loadding.value.total) * 100
+  })
+})
+
+onUnmounted(() => {
+  window.electronAPI.removeAudioExtractionListener()
 })
 </script>
 
@@ -176,17 +201,24 @@ onMounted(() => {
             <el-table-column prop="path" label="路径" />
             <el-table-column width="60">
               <template #default="scope">
-                <el-button v-if="scope.row.isDone" type="success">
-                  <el-icon><Select /></el-icon>
+                <el-button v-if="scope.row.result === 'done'" type="success">
+                  <el-icon><Check /></el-icon>
+                </el-button>
+                <el-button v-if="scope.row.result === 'error'" type="danger">
+                  <el-icon><Close /></el-icon>
                 </el-button>
               </template>
             </el-table-column>
-            <el-table-column width="80">
+            <el-table-column width="60">
               <template #header>
-                <el-button type="danger" @click="handleDeleteAll">清空</el-button>
+                <el-button type="danger" @click="handleDeleteAll">
+                  <el-icon><Delete /></el-icon>
+                </el-button>
               </template>
               <template #default="scope">
-                <el-button type="danger" @click="handleDelete(scope.$index)"> 移除 </el-button>
+                <el-button type="danger" @click="handleDelete(scope.$index)">
+                  <el-icon><Delete /></el-icon>
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -194,7 +226,7 @@ onMounted(() => {
       </el-col>
     </el-row>
     <el-row gutter="10" align="middle">
-      <el-col :span="19">
+      <el-col :span="20">
         <el-text>输出位置：</el-text>
         <el-select
           v-model="store.AudioExtraction.settings.isCustomFolder"
@@ -209,11 +241,6 @@ onMounted(() => {
             :value="item.value"
           />
         </el-select>
-      </el-col>
-      <el-col :span="1">
-        <el-icon v-if="!isReadyToStartAudioExtraction" class="is-loading">
-          <Loading />
-        </el-icon>
       </el-col>
       <el-col :span="4">
         <el-button
@@ -240,12 +267,33 @@ onMounted(() => {
         <el-button @click="openCustomFolder">打开</el-button>
       </el-col>
     </el-row>
+    <el-row>
+      <el-col v-if="showProgress" :span="24">
+        <el-progress
+          v-if="showProgress1"
+          :percentage="100"
+          :indeterminate="true"
+          :format="() => '0%'"
+          :stroke-width="10"
+        />
+        <el-progress
+          v-if="showProgress2"
+          :percentage="percentage"
+          :striped="!isReadyToStartAudioExtraction"
+          striped-flow
+          :duration="duration"
+          :status="progressStatus"
+          :indeterminate="!isReadyToStartAudioExtraction"
+          :stroke-width="10"
+        />
+      </el-col>
+    </el-row>
   </el-main>
 </template>
 
 <style scoped>
 #input-drop-area {
-  height: calc(100vh - 124px);
+  height: calc(100vh - 152px);
 }
 
 .empty {

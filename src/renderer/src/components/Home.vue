@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import store from '../store'
-const version = ref('1.0.1')
+const version = ref('1.0.2')
 
 // 打开开发者工具
 const openDevTools = () => {

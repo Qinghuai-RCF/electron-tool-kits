@@ -3,13 +3,14 @@ import store from '../renderer/src/store'
 import fileMgr from './fileMgr'
 import dirMgr from './dirMgr'
 import { join } from 'path'
-import { exec } from 'child_process'
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 const fs = require('fs').promises
 
 let win
 const CfgPath = join(dirMgr.appConfigPath, 'audio-extraction_cfg.json')
 let loadding = {
-  done: 0,
+  progress: 0,
   total: 0
 }
 
@@ -81,13 +82,13 @@ ipcMain.on('start-audio-extraction', async (event, fileList) => {
   store.AudioExtraction.fileList = JSON.parse(fileList)
   console.log('文件列表:', store.AudioExtraction.fileList)
   const isCustomFolder = store.AudioExtraction.settings.isCustomFolder
-  loadding.done = 0
+  loadding.progress = 0
   loadding.total = store.AudioExtraction.fileList.length
   // 调用 ffmpeg 进行音频提取
   for (let key in store.AudioExtraction.fileList) {
     const file = store.AudioExtraction.fileList[key]
     console.log('开始提取文件:', file)
-    if (!file.isDone) {
+    if (!file.result) {
       // 音频未提取，开始提取
       let outputFilePath
       if (isCustomFolder) {
@@ -101,18 +102,19 @@ ipcMain.on('start-audio-extraction', async (event, fileList) => {
       runAudioExtraction(file.path, outputFilePath, key)
     } else {
       console.log('文件已提取，跳过')
-      loadding.done++
+      loadding.progress++
+      updateFileSListToRenderer()
     }
   }
   do {
     // 等待所有文件提取完成
-    console.log('等待文件提取完成:', loadding.done, '/', loadding.total)
+    console.log('等待文件提取完成:', loadding.progress, '/', loadding.total)
     await new Promise((resolve) => {
       setTimeout(resolve, 100)
     })
-  } while (loadding.done < loadding.total)
-  console.log('等待文件提取完成:', loadding.done, '/', loadding.total)
-  updateFileSListToRenderer()
+  } while (loadding.progress < loadding.total)
+  console.log('等待文件提取完成:', loadding.progress, '/', loadding.total)
+  processDone()
 })
 
 const saveSettings = () => {
@@ -129,28 +131,36 @@ const updateSettingsToRenderer = () => {
 }
 
 const updateFileSListToRenderer = () => {
-  console.log('更新文件列表到渲染器')
-  win.webContents.send(
-    'update-audio-extraction-file-list-to-renderer',
-    JSON.stringify(store.AudioExtraction.fileList)
-  )
+  const data = {
+    fileList: store.AudioExtraction.fileList,
+    progress: loadding.progress
+  }
+  console.log('更新文件列表到渲染器', data)
+  win.webContents.send('update-audio-extraction-file-list', JSON.stringify(data))
+}
+
+const processDone = () => {
+  console.log('处理完成')
+  win.webContents.send('audio-extraction-done')
 }
 
 const runAudioExtraction = async (inputFilePath, outputFilePath, key) => {
-  // 调用 ffmpeg 进行音频提取
-  const cmd = `ffmpeg -y -i "${inputFilePath}" -vn -c:a libmp3lame -q:a 0 "${outputFilePath}"`
-  // 执行命令
-  console.log('执行命令:', cmd)
-  await new Promise((resolve, reject) => {
-    exec(cmd, (error, stdout) => {
-      if (error) {
-        reject(error)
-        return
-      }
-      resolve(stdout)
-    })
-  })
-  loadding.done++
-  store.AudioExtraction.fileList[key].isDone = true
-  console.log('文件提取完成:', outputFilePath)
+  try {
+    // 调用 ffmpeg 进行音频提取
+    const cmd = `ffmpeg -y -i "${inputFilePath}" -vn -c:a libmp3lame -q:a 0 "${outputFilePath}"`
+    // 执行命令
+    console.log('执行命令:', cmd)
+    await exec(cmd)
+    loadding.progress++
+    store.AudioExtraction.fileList[key].result = 'done'
+    console.log('文件提取完成:', outputFilePath)
+    updateFileSListToRenderer()
+  } catch (error) {
+    console.error('音频提取失败:', error)
+    loadding.progress++
+    store.AudioExtraction.fileList[key].result = 'error'
+    updateFileSListToRenderer()
+    // 在这里处理错误，或者将错误传播到调用者
+    throw error
+  }
 }

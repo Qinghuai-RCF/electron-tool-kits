@@ -4,7 +4,6 @@ import Home from '../components/Home.vue'
 import BlblVidExtr from '../components/BlblVidExtr.vue'
 import FolderRemarks from '../components/folder_remarks/FolderRemarks.vue'
 import AudioExtraction from '../components/FFmpeg/audio_extraction/AudioExtraction.vue'
-import Test from '../components/Test.vue'
 
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
@@ -28,11 +27,6 @@ const router = VueRouter.createRouter({
       name: 'audio-extraction',
       path: '/audio-extraction',
       component: AudioExtraction
-    },
-    {
-      name: 'test',
-      path: '/test',
-      component: Test
     }
   ]
 })
