@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { setAudioExtractionListener, removeAudioExtractionListener } from './audioExtraction.mjs'
+import { setBlblVidExtrListener, removeBlblVidExtrListener } from './blblVidExtr.mjs'
 // import { ElMessage } from 'element-plus'
 // import store from '../renderer/src/store'
 
@@ -92,6 +93,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onceSignal,
 
   sendOpenDevTools,
+
+  // fn1 设置监听器
+  setBlblVidExtrListener,
+  removeBlblVidExtrListener,
 
   // fn2 文件夹备注监听器
   initFolderRemarksListeners,

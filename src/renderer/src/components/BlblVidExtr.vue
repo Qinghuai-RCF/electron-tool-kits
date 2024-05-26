@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import store from '../store'
 import { Folder, Warning } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -15,10 +15,10 @@ const isDone = ref(false)
 const isError = ref(false)
 
 onMounted(() => {
-  window.electronAPI.onceSignal('update-blbl-vid-extr-setting', (event, data) => {
-    data = JSON.parse(data)
-    console.log('update-blbl-vid-extr-setting', data)
-    store.fn1Data = data
+  window.electronAPI.setBlblVidExtrListener((cfg) => {
+    cfg = JSON.parse(cfg)
+    console.log('更新渲染进程B站视频提取配置', cfg)
+    store.fn1Data = cfg
 
     if (store.fn1Data.BDownloadDir !== '') {
       isInputSelected.value = true
@@ -31,14 +31,13 @@ onMounted(() => {
       console.log('isExecutable', isExecutable.value)
     }
   })
+
   window.electronAPI.sendSignal('init-blbl-vid-extr')
 })
 
-const updateRendererBlblVidExtrCfg = (event, cfg) => {
-  cfg = JSON.parse(cfg)
-  console.log('更新渲染进程B站视频提取配置', cfg)
-  store.fn1Data = cfg
-}
+onUnmounted(() => {
+  window.electronAPI.removeBlblVidExtrListener()
+})
 
 const runScript = () => {
   updateMainBlblVidExtrCfg()
@@ -102,10 +101,6 @@ const selectInputFolderPath = () => {
 }
 
 const selectOutputFolderPath = () => {
-  window.electronAPI.onceSignal('update-renderer-bve-output-path', (event, newPath) => {
-    store.fn1Data.outPutDir = newPath
-    console.log('新输出目录', newPath)
-  })
   window.electronAPI.sendSignal('bve-select-output-path')
 }
 
@@ -120,8 +115,8 @@ const resetToDefaultInDir = () => {
 }
 
 const resetToDefaultOutDir = () => {
-  window.electronAPI.onceSignal('update-redner-bve-cfg', updateRendererBlblVidExtrCfg)
   window.electronAPI.sendSignal('reset-to-default-out-dir')
+  updateMainBlblVidExtrCfg()
 }
 
 const updateMainBlblVidExtrCfg = () => {

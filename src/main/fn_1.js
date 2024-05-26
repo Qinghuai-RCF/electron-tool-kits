@@ -5,6 +5,7 @@ import { join } from 'path'
 import dirMgr from './dirMgr'
 import fileMgr from './fileMgr'
 import fs from 'fs'
+import { dir } from 'console'
 
 const CfgPath = join(dirMgr.appConfigPath, 'blbl_vid_extr_cfg.json')
 const DataPath = join(dirMgr.appDataPath, 'blbl_vid_extr')
@@ -22,7 +23,7 @@ export const initFn1 = async (mainWindow) => {
       console.log('读取到的 JSON 数据:', data)
       store.fn1Data = data
       win.webContents.send(
-        'update-blbl-vid-extr-setting',
+        'update-redner-bve-cfg',
         JSON.stringify({
           BDownloadDir: store.fn1Data.BDownloadDir,
           outPutDir: store.fn1Data.outPutDir,
@@ -35,7 +36,7 @@ export const initFn1 = async (mainWindow) => {
       await dirMgr.makeDir(defultOutputDir)
       fileMgr.writeJsonSync(CfgPath, store.fn1Data)
       win.webContents.send(
-        'update-blbl-vid-extr-setting',
+        'update-redner-bve-cfg',
         JSON.stringify({
           BDownloadDir: store.fn1Data.BDownloadDir,
           outPutDir: store.fn1Data.outPutDir,
@@ -44,6 +45,8 @@ export const initFn1 = async (mainWindow) => {
       )
       console.log('没有设置')
     }
+
+    dirMgr.makeDir(defultOutputDir)
   })
 
   ipcMain.on('update-main-bve-cfg', (event, cfg) => {
@@ -51,6 +54,7 @@ export const initFn1 = async (mainWindow) => {
     console.log('更新主进程B站视频提取配置并保存:', cfg)
     store.fn1Data = cfg
     fileMgr.writeJsonSync(CfgPath, cfg)
+    dirMgr.makeDir(defultOutputDir)
   })
 
   ipcMain.on('run-blbl-vid-extr', async () => {
