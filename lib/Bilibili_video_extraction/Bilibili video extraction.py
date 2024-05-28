@@ -7,6 +7,10 @@ import requests
 from threading import Thread
 import re
 import argparse
+import sys
+
+# 设置标准输出编码为 UTF-8 修复B站视频提取脚本无法识别非gbk特殊符导致输出文件夹被删除的恶性bug
+sys.stdout.reconfigure(encoding='utf-8')
 
 def sanitize_title(title):
     """
@@ -154,6 +158,19 @@ def xml_2_ass(data):
           print(assPath)
 
           os.system (f'python \"{danmaku2assPath}\" -o \"{assPath}\" -s 1920x1080 -fn "Microsoft Yahei" -fs \"{fs}\" -a \"{alpha}\" -dm 14 -ds 6 \"{xmlPath}\"')
+          import shutil
+
+          # 复制xml文件作为备份
+          source_file = xmlPath
+
+          # xml备份文件路径
+          folder_path = os.path.dirname(assPath)
+          file_name = os.path.basename(xmlPath)
+          target_file = os.path.join(folder_path, file_name)
+
+          # 复制文件
+          shutil.copyfile(source_file, target_file)
+
 
           print(f"{Colors.YELLOW}成功转换弹幕到：{assPath}{Colors.END}")
       else:

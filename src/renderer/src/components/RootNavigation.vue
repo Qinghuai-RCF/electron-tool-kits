@@ -36,7 +36,13 @@ onMounted(() => {
       <el-icon>
         <Switch />
       </el-icon>
-      <span>视频转mp4</span>
+      <span>视频转mp3</span>
+    </el-menu-item>
+    <el-menu-item index="/mobile-computer-file-sync">
+      <el-icon>
+        <Switch />
+      </el-icon>
+      <span>手机电脑文件同步</span>
     </el-menu-item>
   </el-menu>
 </template>

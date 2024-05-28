@@ -163,3 +163,20 @@ input {
   margin-bottom: 0;
 }
 
+.main-title {
+  font-size: var(--el-font-size-extra-large);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.title {
+  /* font-weight: bold; */
+  font-size: var(--el-font-size-large);
+}
+.border-padding-box {
+  border-radius: var(--el-border-radius-base);
+  border: 1px solid var(--el-border-color);
+  width: 100%;
+  padding: 10px;
+}
+
