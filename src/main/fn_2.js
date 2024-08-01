@@ -45,6 +45,7 @@ ipcMain.on('init-fn2-setting', async () => {
 
 ipcMain.on('fn2-save-new-data', (event, tData) => {
   const data = JSON.parse(tData)
+  console.log('接收到的新数据', data)
   Object.entries(data).forEach(([key, value]) => {
     if (value != '') {
       store.fn2Data.remarksData[key] = value
@@ -169,7 +170,7 @@ const getFolderList = (path) => {
 
 const updateDataFile = () => {
   // 写入文件
-  fileMgr.writeJsonSync(fn2DataPath, store.fn1Data.remarksData)
+  fileMgr.writeJsonSync(fn2DataPath, store.fn2Data.remarksData)
 }
 
 const getData = async () => {

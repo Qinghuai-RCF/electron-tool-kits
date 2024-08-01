@@ -1,11 +1,18 @@
 <script setup>
 import { ref } from 'vue'
 import store from '../store'
-const version = ref('1.0.4')
+import { ElMessageBox, ElMessage } from 'element-plus'
+import '../../../../node_modules/element-plus/theme-chalk/el-message-box.css'
+const version = ref('1.1.0')
 
 // 打开开发者工具
 const openDevTools = () => {
   window.electronAPI.sendOpenDevTools()
+}
+
+// 打开数据文件夹
+const openDataPath = () => {
+  window.electronAPI.sendSignal('open-folder', 'AppDataPath')
 }
 
 const themeOptions = [
@@ -51,6 +58,7 @@ const changeTheme = (value) => {
     <h1>当前版本：{{ version }}</h1>
     <el-row>
       <el-button @click="openDevTools">开发者工具</el-button>
+      <el-button @click="openDataPath">开发软件数据文件夹</el-button>
     </el-row>
     <el-row>
       <el-text style="margin-right: var(--gap)">主题</el-text>
@@ -70,15 +78,26 @@ const changeTheme = (value) => {
     </el-row>
     <el-row>
       <pre>
+添加更新日期
+
+
 更新记录：
 
-* 1.0.4： 优化/修复： 优化主页，修复B站视频提取脚本恶性bug
+* 1.1.0： 优化/修复/功能： 添加了手机电脑文件同步功能，并可保存预设,优化体验
+
+描述：
+- 功能：添加了手机电脑文件同步功能，并可保存预设
+- 修复：修复了更新备注时传输了错误参数导致更新失败的问题
+- 功能：在主页添加了打开数据文件夹的按钮
+
+1.0.4： 优化/修复： 优化主页，修复B站视频提取脚本恶性bug
 
 描述：
 - 修复：修复B站视频提取脚本无法识别非gbk特殊符导致输出文件夹被删除的恶性bug
 - 优化：主页添加更新记录文本
 - 优化：B站视频提取脚本在转换弹幕时在目标文件夹会创建xml弹幕备份，以便后续重新转换弹幕
 - 优化：修正目录文本错误
+
 
 * 1.0.3： 修复： 修复B站视频提取更改路径时渲染进程没有即时更新的问题
 

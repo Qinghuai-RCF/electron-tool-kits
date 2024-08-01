@@ -1,4 +1,4 @@
-import { nativeTheme, ipcMain, shell } from 'electron'
+import { nativeTheme, ipcMain, shell, dialog } from 'electron'
 import { exec } from 'child_process'
 import store from '../renderer/src/store'
 import dirMgr from './dirMgr'
@@ -10,13 +10,17 @@ const mainCfgPath = join(dirMgr.appConfigPath, 'main_cfg.json')
 
 let win
 
-export const initFnMain = (mainWindow) => {
-  win = mainWindow
-  initChangeTheme()
-  initCmdExec()
-  initOpenFolder()
-  initDevTools()
-  initLibPath()
+export const initFnMain = async (mainWindow) => {
+  return new Promise((resolve) => {
+    win = mainWindow
+    initChangeTheme()
+    initCmdExec()
+    initOpenFolder()
+    initDevTools()
+    initLibPath()
+
+    resolve()
+  })
 }
 
 const initChangeTheme = () => {
@@ -37,12 +41,18 @@ const initChangeTheme = () => {
 }
 
 const initCmdExec = () => {
-  ipcMain.on('request-cmd', (event, command) => {
+  ipcMain.on('request-cmd', async (event, command) => {
     console.log('执行命令：', command)
     // 验证命令是否安全
     if (isCommandSafe(command)) {
       // 如果命令安全，则在主进程中执行
-      exec(command)
+      try {
+        const { stdout } = await exec(command)
+        console.log('输出:', stdout)
+      } catch (err) {
+        console.error(`执行命令时出错: ${err}`)
+        event.reply('cmd-executed', `Error: ${err.message}`)
+      }
     } else {
       // 如果命令不安全，则拒绝执行
       event.reply('cmd-executed', 'Command not executed due to security concerns.')
@@ -52,6 +62,9 @@ const initCmdExec = () => {
 
 const initOpenFolder = () => {
   ipcMain.on('open-folder', (event, path) => {
+    if (path === 'AppDataPath') {
+      path = dirMgr.appDocPath
+    }
     shell.openPath(path)
   })
 }
@@ -132,3 +145,54 @@ const updateIsDark = () => {
 ipcMain.on('init-is-dark', () => {
   updateIsDark()
 })
+
+// 获取路径开始
+
+ipcMain.on('main-select-path', (event, type) => {
+  console.log('main-select-path', type)
+  if (type === 'folder') {
+    // 选择文件夹路径
+    win.webContents.send('main-select-path-renderer', selectFolder())
+  } else if (type === 'file') {
+    // 选择文件路径
+    win.webContents.send('main-select-path-to-renderer', selectFile())
+  }
+})
+
+const selectFolder = () => {
+  console.log('选择文件夹路径')
+  dialog
+    .showOpenDialog(win, {
+      properties: ['openDirectory']
+    })
+    .then((result) => {
+      if (!result.canceled) {
+        // 用户选择的文件夹路径
+        return result.filePaths[0]
+        // 将路径回传给渲染进程
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const selectFile = () => {
+  console.log('选择文件路径')
+  dialog
+    .showOpenDialog(win, {
+      properties: ['openFile']
+    })
+    .then((result) => {
+      if (!result.canceled) {
+        // 用户选择的文件夹路径
+        return result.filePaths[0]
+        // 将路径回传给渲染进程
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+// 获取路径结束

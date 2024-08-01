@@ -198,9 +198,6 @@ const updateMainBlblVidExtrCfg = () => {
           </div>
         </el-col>
       </el-row>
-      <el-row>
-        <el-text type="warning"> 请避免使用中文路径，会导致输出路径被删除 </el-text>
-      </el-row>
     </el-main>
   </el-container>
 

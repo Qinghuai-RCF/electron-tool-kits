@@ -45,7 +45,6 @@ const handleDelete = (index) => {
 const handleDeleteAll = () => {
   console.log('清空列表')
   store.AudioExtraction.fileList = []
-  store.AudioExtraction.isEmpty = true
 }
 
 const handleSelectChange = (value) => {
@@ -154,7 +153,6 @@ onMounted(() => {
           const newFile = { name: files[i].name, path: files[i].path, result: '' }
           store.AudioExtraction.fileList.push(newFile)
           console.log('文件添加成功：', newFile)
-          store.AudioExtraction.isEmpty = false
         }
       }
     }
@@ -186,9 +184,6 @@ onUnmounted(() => {
     <el-row>
       <el-col>
         <div id="input-drop-area" class="border-box">
-          <div v-if="isEmpty" class="empty">
-            <el-empty description="将音频文件拖入此区域" />
-          </div>
           <el-table
             :data="store.AudioExtraction.fileList"
             stripe

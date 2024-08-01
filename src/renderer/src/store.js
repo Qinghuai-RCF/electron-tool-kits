@@ -26,8 +26,13 @@ const store = reactive({
       isCustomFolder: false,
       customFolder: ''
     },
-    fileList: [],
-    isEmpty: true
+    fileList: []
+  },
+  MobileComputerFileSync: {
+    presets: {},
+    settings: {
+      isBackup: false
+    }
   }
 })
 

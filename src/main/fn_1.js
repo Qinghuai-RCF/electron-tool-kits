@@ -5,7 +5,6 @@ import { join } from 'path'
 import dirMgr from './dirMgr'
 import fileMgr from './fileMgr'
 import fs from 'fs'
-import { dir } from 'console'
 
 const CfgPath = join(dirMgr.appConfigPath, 'blbl_vid_extr_cfg.json')
 const DataPath = join(dirMgr.appDataPath, 'blbl_vid_extr')

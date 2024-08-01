@@ -40,4 +40,4 @@ const makeDir = async (path) => {
   }
 }
 
-export default { initDir, makeDir, appDataPath, appConfigPath }
+export default { initDir, makeDir, appDocPath, appDataPath, appConfigPath }
