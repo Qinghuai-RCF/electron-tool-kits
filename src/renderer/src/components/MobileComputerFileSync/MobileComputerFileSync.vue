@@ -898,13 +898,13 @@ const settingsAndPresetsListenerOnce = (id = null) => {
             </el-row>
           </el-col>
         </el-row>
+        <el-row>
+          <el-text type="warning">
+            <el-icon><WarningFilled /></el-icon>
+            暂无文件状态功能 暂不支持手机端文件备份
+          </el-text>
+        </el-row>
       </div>
-      <el-row>
-        <el-text type="warning">
-          <el-icon><WarningFilled /></el-icon>
-          文件状态功能还没做
-        </el-text>
-      </el-row>
     </el-main>
   </el-container>
 </template>

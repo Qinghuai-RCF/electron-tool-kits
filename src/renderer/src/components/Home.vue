@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import store from '../store'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import '../../../../node_modules/element-plus/theme-chalk/el-message-box.css'
-const version = ref('1.1.0')
+const version = ref('1.1.1')
 
 // 打开开发者工具
 const openDevTools = () => {
@@ -58,7 +58,7 @@ const changeTheme = (value) => {
     <h1>当前版本：{{ version }}</h1>
     <el-row>
       <el-button @click="openDevTools">开发者工具</el-button>
-      <el-button @click="openDataPath">开发软件数据文件夹</el-button>
+      <el-button @click="openDataPath">软件数据文件夹</el-button>
     </el-row>
     <el-row>
       <el-text style="margin-right: var(--gap)">主题</el-text>
@@ -78,12 +78,16 @@ const changeTheme = (value) => {
     </el-row>
     <el-row>
       <pre>
-添加更新日期
-
-
 更新记录：
 
-* 1.1.0： 优化/修复/功能： 添加了手机电脑文件同步功能，并可保存预设,优化体验
+* 1.1.1： 优化/修复： 修复同步功能UI问题，优化部分注释，优化文件同步命令
+
+描述：
+- 修复：修复电脑向手机同步时，没有传回同步结果导致UI一直显示运行中的问题
+- 优化：添加注释“暂不支持手机端文件备份”
+- 优化：给adb文件同步命令添加 -a 参数，确保文件复制时保留文件修改时间等元数据
+
+* 1.1.0： 修复/功能： 添加了手机电脑文件同步功能，并可保存预设,优化体验
 
 描述：
 - 功能：添加了手机电脑文件同步功能，并可保存预设

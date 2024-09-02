@@ -281,9 +281,16 @@ ipcMain.on('mcfs-start-sync', async (event, data) => {
       backupError = await renameBackupFileOrFolder('phone', data.phonePath, data.isFolder)
     }
     // 电脑向手机同步
-    const cmd = `${adbPath} -s ${data.deviceID} push "${data.computerPath}" "${data.phonePath}"`
+    const cmd = `${adbPath} -s ${data.deviceID} push -a "${data.computerPath}" "${data.phonePath}"`
     // console.log('执行命令:', cmd)
-    runCmd(cmd)
+    const sycnResult = runCmd(cmd)
+    win.webContents.send(
+      'mcfs-sync-result',
+      JSON.stringify({
+        sycnResult: sycnResult,
+        backupError: backupError
+      })
+    )
   } else if (data.direction === 'phone2computer') {
     if (data.isBackup) {
       // 备份电脑文件
@@ -291,7 +298,7 @@ ipcMain.on('mcfs-start-sync', async (event, data) => {
       console.log('备份错误', backupError)
     }
     // 手机向电脑同步
-    const cmd = `${adbPath} -s ${data.deviceID} pull "${data.phonePath}" "${data.computerPath}"`
+    const cmd = `${adbPath} -s ${data.deviceID} pull -a "${data.phonePath}" "${data.computerPath}"`
     // console.log('执行命令:', cmd)
     const sycnResult = runCmd(cmd)
     win.webContents.send(
