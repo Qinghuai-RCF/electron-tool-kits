@@ -1,10 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Right, Back, Monitor, Iphone, EditPen, WarningFilled } from '@element-plus/icons-vue'
+import { Right, Back, Monitor, Iphone, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { SuccessFilled, CircleCloseFilled } from '@element-plus/icons-vue'
 import store from '../../store.js'
 import '../../../../../node_modules/element-plus/theme-chalk/el-message-box.css'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const deviceLoading = ref(false)
 const isDeviceSelected = ref(false)
@@ -199,11 +202,6 @@ const getNameById = (data, id) => {
   return item ? item.name : null
 }
 
-const deleteDevice = (device) => {
-  console.log('删除设备', device.ID)
-  window.electronAPI.onceSignal('mcfs-delete-device', device.ID)
-}
-
 const selectDevice = (device) => {
   console.log('selectDevice', device.ID)
   isDeviceSelected.value = true
@@ -217,49 +215,6 @@ const selectDevice = (device) => {
 
   // 初始化预设选项
   generatePresetOptions(device.ID)
-}
-
-const changeCustomDeviceName = (device) => {
-  console.log('changeCustomDeviceName', device.ID)
-  ElMessageBox.prompt('请输入新设备名', '设备重命名', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    // inputPattern: /.*\S+.*/,
-    inputErrorMessage: '设备名不能为空'
-  }).then(({ value }) => {
-    console.log('新设备名', value)
-    if (value !== null) {
-      if (value.trim() !== '') {
-        value = value.trim()
-      } else {
-        value = ''
-      }
-    } else {
-      value = ''
-    }
-    const newName = value
-    console.log('新设备名', newName)
-    ElMessage({
-      type: 'success',
-      message: `已更新 ${device.ID} 设备名为: ${newName}`
-    })
-
-    for (let tDevice of deviceList.value) {
-      if (tDevice.ID === device.ID) {
-        // 修改name属性
-        tDevice.name = newName
-        console.log(`设备ID ${device.ID} 的名称已更新为 ${newName}`)
-        saveDeviceName()
-        refreshList()
-        currentDevice.value.name = newName
-        return // 找到并修改后退出函数
-      }
-    }
-  })
-}
-
-const saveDeviceName = () => {
-  window.electronAPI.sendSignal('mcfs-save-device-name', JSON.stringify(deviceList.value))
 }
 
 const resetAllData = () => {
@@ -332,18 +287,6 @@ const selectPhonePath = () => {
   // 使用adb命令打开手机shell
   // 可暂时不做，因为手机文件路径的选择比较复杂，暂时不支持
   window.electronAPI.sendSignal('mcfs-select-phone-file-path')
-}
-
-const openConfirm = (device) => {
-  const txt = `确认删除设备 ${device.name} (${device.ID})
-  及其所有预设吗?`
-  ElMessageBox.confirm(txt, '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    deleteDevice(device)
-  })
 }
 
 const initSettingsAndPresets = () => {
@@ -601,12 +544,10 @@ const settingsAndPresetsListenerOnce = (id = null) => {
   <el-container>
     <el-main v-if="!isDeviceSelected">
       <el-row>
-        <el-col>
-          <div class="main-title" style="float: left">当前设备</div>
-          <div style="float: right">
-            <el-button :disabled="deviceLoading" @click="refreshList">刷新</el-button>
-          </div>
-        </el-col>
+        <el-button @click="router.back()">返回</el-button>
+        <div class="main-title" style="margin-left: 10px; margin-right: 10px">
+          {{ store.ADB.currentDevice.name }} ({{ store.ADB.currentDevice.ID }}) / 文件同步
+        </div>
       </el-row>
       <el-row
         v-loading="deviceLoading"
@@ -625,18 +566,12 @@ const settingsAndPresetsListenerOnce = (id = null) => {
             <el-table-column prop="ID" label="设备ID" />
             <el-table-column label="" width="170">
               <template #default="scope">
-                <el-button @click="changeCustomDeviceName(scope.row)"> 重命名 </el-button>
-
-                <el-button v-if="scope.row.enable" type="primary" @click="selectDevice(scope.row)">
-                  连接
-                </el-button>
                 <el-button
-                  v-if="!scope.row.enable"
-                  plain
-                  type="danger"
-                  @click="openConfirm(scope.row)"
+                  v-if="scope.row.enable && scope.row.ID == store.ADB.currentDevice.ID"
+                  type="primary"
+                  @click="selectDevice(scope.row)"
                 >
-                  删除
+                  进入
                 </el-button>
               </template>
             </el-table-column>
@@ -648,14 +583,10 @@ const settingsAndPresetsListenerOnce = (id = null) => {
     <!-- 已选择设备 -->
     <el-main v-if="isDeviceSelected">
       <el-row>
-        <el-button @click="isDeviceSelected = false">返回</el-button>
+        <el-button @click="router.back()">返回</el-button>
         <div class="main-title" style="margin-left: 10px; margin-right: 10px">
-          {{ currentDevice.name }} ({{ currentDevice.ID }})
+          {{ currentDevice.name }} ({{ currentDevice.ID }}) / 文件同步
         </div>
-        <el-button @click="changeCustomDeviceName(currentDevice)">
-          <el-icon><EditPen /></el-icon>
-          <el-text>更名</el-text>
-        </el-button>
       </el-row>
       <el-row>
         <el-col :span="24">
@@ -898,13 +829,13 @@ const settingsAndPresetsListenerOnce = (id = null) => {
             </el-row>
           </el-col>
         </el-row>
-        <el-row>
-          <el-text type="warning">
-            <el-icon><WarningFilled /></el-icon>
-            暂无文件状态功能 暂不支持手机端文件备份
-          </el-text>
-        </el-row>
       </div>
+      <el-row>
+        <el-text type="warning">
+          <el-icon><WarningFilled /></el-icon>
+          文件状态功能还没做
+        </el-text>
+      </el-row>
     </el-main>
   </el-container>
 </template>

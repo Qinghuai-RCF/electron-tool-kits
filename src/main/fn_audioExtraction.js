@@ -150,7 +150,7 @@ const processDone = () => {
 const runAudioExtraction = async (inputFilePath, outputFilePath, key) => {
   try {
     // 调用 ffmpeg 进行音频提取
-    const cmd = `"${ffmpegPath}" -y -i "${inputFilePath}" -vn -c:a libmp3lame -q:a 0 "${outputFilePath}"`
+    const cmd = `"${ffmpegPath}" -i "${inputFilePath}" -vn -acodec libmp3lame -q:a 2 -copyts -avoid_negative_ts make_zero "${outputFilePath}"`
     // 执行命令
     console.log('执行命令:', cmd)
     await exec(cmd)

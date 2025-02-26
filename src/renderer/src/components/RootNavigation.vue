@@ -38,11 +38,11 @@ onMounted(() => {
       </el-icon>
       <span>视频转mp3</span>
     </el-menu-item>
-    <el-menu-item index="/mobile-computer-file-sync">
+    <el-menu-item index="/adb">
       <el-icon>
         <Switch />
       </el-icon>
-      <span>手机电脑文件同步</span>
+      <span>ADB</span>
     </el-menu-item>
   </el-menu>
 </template>

@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AudioExtraction: typeof import('./src/components/FFmpeg/audio_extraction/AudioExtraction.vue')['default']
     BlblVidExtr: typeof import('./src/components/BlblVidExtr.vue')['default']
+    DeviceList: typeof import('./src/components/ADB/DeviceList.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElBadge: typeof import('element-plus/es')['ElBadge']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -33,11 +34,13 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElText: typeof import('element-plus/es')['ElText']
     FolderRemarks: typeof import('./src/components/folder_remarks/FolderRemarks.vue')['default']
+    FunctionSelect: typeof import('./src/components/ADB/FunctionSelect.vue')['default']
     Home: typeof import('./src/components/Home.vue')['default']
-    MobileComputerFileSync: typeof import('./src/components/MobileComputerFileSync/MobileComputerFileSync.vue')['default']
+    MobileComputerFileSync: typeof import('./src/components/ADB/MobileComputerFileSync.vue')['default']
     RootNavigation: typeof import('./src/components/RootNavigation.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    RunADBCmd: typeof import('./src/components/ADB/RunADBCmd.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

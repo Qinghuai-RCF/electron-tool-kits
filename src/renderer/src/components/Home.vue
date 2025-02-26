@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import store from '../store'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import '../../../../node_modules/element-plus/theme-chalk/el-message-box.css'
-const version = ref('1.1.1')
+// eslint-disable-next-line no-unused-vars
+// import { ElMessageBox, ElMessage } from 'element-plus'
+// import '../../../../node_modules/element-plus/theme-chalk/el-message-box.css'
+const version = ref('1.1.2')
 
 // 打开开发者工具
 const openDevTools = () => {
@@ -79,6 +80,15 @@ const changeTheme = (value) => {
     <el-row>
       <pre>
 更新记录：
+
+* 1.1.2： 优化/修复： 修复提取后的音频长度不准确的问题，新增adb命令执行页面
+
+描述：
+- 修复：修改音频提取命令，修复提取后的音频长度不准确的问题
+- 新增：MobileComputerFileSync模块更名为adb，并添加adb命令运行页面
+- 优化：删除 ADB 当前设备页面 设备重命名按钮
+- 修复：修复 ADB 设备更名功能
+- 优化：优化UI
 
 * 1.1.1： 优化/修复： 修复同步功能UI问题，优化部分注释，优化文件同步命令
 

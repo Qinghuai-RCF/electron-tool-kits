@@ -45,7 +45,7 @@ const initSettingsAndPresets = async () => {
   // 发送配置数据给渲染进程
   win.webContents.send(
     'mcfs-init-settings-and-presets-to-renderer',
-    JSON.stringify(store.MobileComputerFileSync)
+    JSON.stringify(store.ADB.MobileComputerFileSync)
   )
 }
 
@@ -54,8 +54,8 @@ const readConfig = async () => {
   const config = await fileMgr.readJsonSync(ConfigPath)
   if (config) {
     // 成功读取到配置数据
-    store.MobileComputerFileSync.settings = config
-    console.log('读取到的mcfs配置文件数据:', store.MobileComputerFileSync.settings)
+    store.ADB.MobileComputerFileSync.settings = config
+    console.log('读取到的mcfs配置文件数据:', store.ADB.MobileComputerFileSync.settings)
   } else {
     // 失败读取到配置数据
     console.log('没有设置')
@@ -68,7 +68,7 @@ const readPresets = async () => {
   if (presets) {
     // 成功读取到预设数据
     console.log('读取到的预设数据:', presets)
-    store.MobileComputerFileSync.presets = presets
+    store.ADB.MobileComputerFileSync.presets = presets
   } else {
     // 失败读取到预设数据
     console.log('没有预设')
@@ -229,14 +229,14 @@ ipcMain.on('mcfs-check-computer-path-type', async (event, path) => {
 // 备份设置更改时保存设置
 ipcMain.on('mcfs-change-backup-config', async (event, isBackup) => {
   // 将新的备份设置保存到变量
-  store.MobileComputerFileSync.settings.isBackup = isBackup
+  store.ADB.MobileComputerFileSync.settings.isBackup = isBackup
   // 保存到配置文件
   saveConfigToFile()
 })
 
 // 保存到配置文件
 const saveConfigToFile = async () => {
-  fileMgr.writeJsonSync(ConfigPath, store.MobileComputerFileSync.settings)
+  fileMgr.writeJsonSync(ConfigPath, store.ADB.MobileComputerFileSync.settings)
 }
 
 // 设备预设操作
@@ -246,19 +246,19 @@ ipcMain.on('mcfs-preset-operation', async (event, data) => {
   // 新增预设
   if (data.operation === 'save') {
     // 确保指定设备ID层级存在
-    if (!store.MobileComputerFileSync.presets[data.deviceID]) {
-      store.MobileComputerFileSync.presets[data.deviceID] = {}
+    if (!store.ADB.MobileComputerFileSync.presets[data.deviceID]) {
+      store.ADB.MobileComputerFileSync.presets[data.deviceID] = {}
     }
-    store.MobileComputerFileSync.presets[data.deviceID][data.presetName] = data.preset
+    store.ADB.MobileComputerFileSync.presets[data.deviceID][data.presetName] = data.preset
   } else if (data.operation === 'delete') {
     // 删除预设
-    delete store.MobileComputerFileSync.presets[data.deviceID][data.presetName]
-    if (Object.keys(store.MobileComputerFileSync.presets[data.deviceID]).length === 0) {
-      delete store.MobileComputerFileSync.presets[data.deviceID]
+    delete store.ADB.MobileComputerFileSync.presets[data.deviceID][data.presetName]
+    if (Object.keys(store.ADB.MobileComputerFileSync.presets[data.deviceID]).length === 0) {
+      delete store.ADB.MobileComputerFileSync.presets[data.deviceID]
     }
   }
-  console.log('所有预设:', store.MobileComputerFileSync.presets)
-  fileMgr.writeJsonSync(DevicePresetsPath, store.MobileComputerFileSync.presets)
+  console.log('所有预设:', store.ADB.MobileComputerFileSync.presets)
+  fileMgr.writeJsonSync(DevicePresetsPath, store.ADB.MobileComputerFileSync.presets)
   initSettingsAndPresets()
 })
 
@@ -407,3 +407,24 @@ ipcMain.on('mcfs-open-computer-path', (event, path) => {
     }
   })
 })
+
+
+
+// 以下为ADB相关代码
+// 接收渲染进程发送的ADB命令并执行
+ipcMain.on('adb-run-cmd', async (event, cmd) => {
+  try {
+    console.log('执行命令:', cmd)
+    const { stdout } = await exec(cmd)
+    console.log('输出:', stdout)
+    win.webContents.send('adb-send-output-to-renderer', stdout)
+    return true
+  } catch (err) {
+    console.error(`执行命令时出错: ${err}`)
+    win.webContents.send('adb-send-output-to-renderer', err)
+    return false
+  }
+})
+
+
+
